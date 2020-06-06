@@ -96,7 +96,6 @@ void Update() {
     sword_modelMatrix = glm::scale(sword_modelMatrix, glm::vec3(1.01f, 1.01f, 1.0f));
     sword_modelMatrix = glm::scale(sword_modelMatrix, glm::vec3(-1.01f, -1.01f, 1.0f));
     
-    sword_modelMatrix = glm::translate(sword_modelMatrix, glm::vec3(0.01f, 0.0f, 0.0f));
     
     
     
