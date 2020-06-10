@@ -39,7 +39,8 @@ glm::vec3 ball_position = glm::vec3(0, 0, 0);
 
 float player1_speed = 5.0f;
 float player2_speed = 5.0f;
-float ball_speed = 1.0f;
+float ball_speed_x = 0.05f;
+float ball_speed_y = 0.05f;
 
 bool ball_keepMoving = false;
 
@@ -164,42 +165,27 @@ void Update() {
     
     //check for ball
     if (ball_keepMoving) {
-        if (!ball_changeY && !ball_changeX) {
-            //by default
-            ball_position.x += 2.0f * deltaTime;
-            ball_position.y += 1.5f * deltaTime;
+        
+        //check ball-edge collision
+        if (ball_position.y >= 3.6f || ball_position.y <= -3.6f) {
+            ball_speed_y *= -1.0f;
         }
         
-        else if (ball_changeX) {
-            ball_position.x -= 2.0f * deltaTime;
-            ball_position.y += 1.5f * deltaTime;
-        }
-        
-        else if (ball_changeY) {
-            ball_position.x += 2.0f * deltaTime;
-            ball_position.y -= 1.5f * deltaTime;
-        }
-        
-        //check position ball-player1_paddle
-        //(w1+w2)/2 = (1.0+0.2)/2 = 0.6
-        //(h1+h2)/2 = (1.6+0.2)/2 = 0.9
         if (fabs(ball_position.x - player1_position.x) - 0.6f < 0 &&
             fabs(ball_position.y - player1_position.y) - 0.9f < 0) {
-            ball_changeX = true;
+            ball_speed_x *= -1.0f;
             //colliding
         }
         
-        //check position ball-player2_paddle
-        if (fabs(ball_position.x - player2_position.x) - 0.6f < 0 &&
+        else if (fabs(ball_position.x - player2_position.x) - 0.6f < 0 &&
             fabs(ball_position.y - player2_position.y) - 0.9f < 0) {
-            ball_changeX = true;
+            ball_speed_x *= -1.0f;
             //colliding
         }
-         
-        //check postion ball-edge
-        if (ball_position.y > 2.0f || ball_position.y < -2.0f) {
-            ball_changeY = true;
-        }
+        
+
+        ball_position.x += ball_speed_x;
+        ball_position.y += ball_speed_y;
         
     }
     
