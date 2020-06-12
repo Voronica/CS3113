@@ -22,7 +22,6 @@ bool gameIsRunning = true;
 
 ShaderProgram program;
 ShaderProgram program_textured;
-
 GLuint ballTextureID;
 
 glm::mat4 viewMatrix, player1_modelMatrix, player2_modelMatrix, ball_modelMatrix, projectionMatrix;
@@ -42,6 +41,9 @@ glm::vec3 player2_position = glm::vec3(-5.0, 0, 0);
 glm::vec3 player2_movement;
 
 //the ball
+// Start at 5.0, 0, 0
+
+// Don’t go anywhere (yet).
 glm::vec3 ball_position = glm::vec3(0, 0, 0);
 
 
@@ -50,7 +52,7 @@ float player2_speed = 5.0f;
 float ball_speed_x = 0.05f;
 float ball_speed_y = 0.05f;
 
-bool ball_keepMoving = false;
+bool ball_keepMoving = false;  //ball still by default
 
 
 GLuint LoadTexture(const char* filePath) {
@@ -85,9 +87,7 @@ void Initialize() {
     program.Load("shaders/vertex.glsl", "shaders/fragment.glsl");
     program_textured.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
     
-    
-    
-    
+
     viewMatrix = glm::mat4(1.0f);
     
     //Initializa player1, player2 modelMatrixes
@@ -105,13 +105,7 @@ void Initialize() {
     program_textured.SetViewMatrix(viewMatrix);
 
     
-    glUseProgram(program.programID);
-    glUseProgram(program_textured.programID);
-    
-    
-    
-    
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClearColor(0.1f, 0.2f, 0.2f, 0.1f);
     
     //blending
     glEnable(GL_BLEND);
@@ -253,17 +247,19 @@ void drawPlayer2() {
 }
 
 void drawBall() {
-    program.SetModelMatrix(ball_modelMatrix);
+    program_textured.SetModelMatrix(ball_modelMatrix);
     glBindTexture(GL_TEXTURE_2D, ballTextureID);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Render() {
+
+void Render_Paddles() {
     glClear(GL_COLOR_BUFFER_BIT);
     
+    glUseProgram(program.programID);
     
     //draw player1
-    float player1_vertices[] = { -0.3f, -0.7f, 0.3f, 0.7f, -0.3f, 0.7f, 0.3f, 0.7f, -0.3f, -0.7f, 0.3f, -0.7f};
+    float player1_vertices[] = { -0.3, -0.7, 0.3, 0.7, -0.3, 0.7, 0.3, 0.7, -0.3, -0.7, 0.3, -0.7};
     glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, player1_vertices);
     glEnableVertexAttribArray(program.positionAttribute);
 
@@ -271,27 +267,47 @@ void Render() {
     drawPlayer1();
     
     //draw player2
-    float player2_vertices[] = { -0.3f, -0.7f, 0.3f, 0.7f, -0.3f, 0.7f, 0.3f, 0.7f, -0.3f, -0.7f, 0.3f, -0.7f};
+    float player2_vertices[] = { -0.3, -0.7, 0.3, 0.7, -0.3, 0.7, 0.3, 0.7, -0.3, -0.7, 0.3, -0.7};
     glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, player2_vertices);
     glEnableVertexAttribArray(program.positionAttribute);
     
     drawPlayer2();
     
-    float ball[] = { -0.1f, -0.1f, 0.1f, 0.1f, -0.1f, 0.1f, 0.1f, 0.1f, -0.1f, -0.1f, 0.1f, -0.1f };
-    float ballCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, ball);
-    glEnableVertexAttribArray(program.positionAttribute);
     
-    glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, ballCoords);
-    glEnableVertexAttribArray(program.texCoordAttribute);
-    
-    
-    drawBall();
     
     glDisableVertexAttribArray(program.positionAttribute);
     glDisableVertexAttribArray(program.texCoordAttribute);
     
+}
+
+void Render_Ball() {
+    
+    glUseProgram(program_textured.programID);
+    
+    float ball[] = { -0.1, -0.1, 0.1, -0.1, 0.1, 0.1, -0.1, -0.1, 0.1, 0.1, -0.1, 0.1 };
+    float ballCoords[] = {0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0};
+    glVertexAttribPointer(program_textured.positionAttribute, 2, GL_FLOAT, false, 0, ball);
+    glEnableVertexAttribArray(program_textured.positionAttribute);
+    
+    glVertexAttribPointer(program_textured.texCoordAttribute, 2, GL_FLOAT, false, 0, ballCoords);
+    glEnableVertexAttribArray(program_textured.texCoordAttribute);
+    
+    
+    drawBall();
+    
+    glDisableVertexAttribArray(program_textured.positionAttribute);
+    glDisableVertexAttribArray(program_textured.texCoordAttribute);
+    
+}
+
+void Render() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    Render_Paddles();  //Render shader program - paddles
+    Render_Ball();     //Render shader program_textured - ball
+    
     SDL_GL_SwapWindow(displayWindow);
+    
 }
 
 void Shutdown() {
@@ -308,6 +324,7 @@ int main(int argc, char* argv[]) {
         ProcessInput();
         Update();
         Render();
+        
     }
     
     Shutdown();
