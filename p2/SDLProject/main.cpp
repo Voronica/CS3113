@@ -74,7 +74,7 @@ GLuint LoadTexture(const char* filePath) {
 
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
-    displayWindow = SDL_CreateWindow("PONG!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+    displayWindow = SDL_CreateWindow("PONG! - VoronicaZ", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
     SDL_GL_MakeCurrent(displayWindow, context);
     
@@ -205,13 +205,13 @@ void Update() {
             ball_speed_y *= -1.0f;
         }
         
-        if (fabs(ball_position.x - player1_position.x) - 0.4f < 0 &&
+        if (fabs(ball_position.x - player1_position.x) - 0.3f < 0 &&
             fabs(ball_position.y - player1_position.y) - 0.9f < 0) {
             ball_speed_x *= -1.0f;
             //colliding
         }
         
-        else if (fabs(ball_position.x - player2_position.x) - 0.4f < 0 &&
+        else if (fabs(ball_position.x - player2_position.x) - 0.3f < 0 &&
             fabs(ball_position.y - player2_position.y) - 0.9f < 0) {
             ball_speed_x *= -1.0f;
             //colliding
@@ -259,7 +259,7 @@ void Render_Paddles() {
     glUseProgram(program.programID);
     
     //draw player1
-    float player1_vertices[] = { -0.3, -0.7, 0.3, 0.7, -0.3, 0.7, 0.3, 0.7, -0.3, -0.7, 0.3, -0.7};
+    float player1_vertices[] = { -0.2, -0.7, 0.2, 0.7, -0.2, 0.7, 0.2, 0.7, -0.2, -0.7, 0.2, -0.7};
     glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, player1_vertices);
     glEnableVertexAttribArray(program.positionAttribute);
 
@@ -267,7 +267,7 @@ void Render_Paddles() {
     drawPlayer1();
     
     //draw player2
-    float player2_vertices[] = { -0.3, -0.7, 0.3, 0.7, -0.3, 0.7, 0.3, 0.7, -0.3, -0.7, 0.3, -0.7};
+    float player2_vertices[] = { -0.2, -0.7, 0.2, 0.7, -0.2, 0.7, 0.2, 0.7, -0.2, -0.7, 0.2, -0.7};
     glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, player2_vertices);
     glEnableVertexAttribArray(program.positionAttribute);
     
