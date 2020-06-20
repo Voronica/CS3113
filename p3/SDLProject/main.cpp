@@ -103,7 +103,7 @@ void Initialize() {
     
     state.landingPlane = new Entity();
     state.landingPlane->entityName = "plane";
-    state.landingPlane->position = glm::vec3(5, -2.25, 0);
+    state.landingPlane->position = glm::vec3(2.5, -2.25, 0);
     state.landingPlane->movement = glm::vec3(0);
     state.landingPlane->textureID = LoadTexture("landingpad.png");
     
@@ -225,7 +225,7 @@ void Initialize() {
 
     
     for (int i = 0; i < PLATFORM_COUNT; i++) {
-        state.obstacles[i].Update(0, NULL, 0);
+        state.obstacles[i].UpdateRockCollision(0, NULL, 0);
     }
  
 }
@@ -286,6 +286,7 @@ void Update() {
     float deltaTime = ticks - lastTicks;
     lastTicks = ticks;
     
+    
     deltaTime += accumulator;
     
     if (deltaTime < FIXED_TIMESTEP) {
@@ -295,12 +296,20 @@ void Update() {
     }
     while (deltaTime >= FIXED_TIMESTEP) {
     // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
-        state.ship->Update(FIXED_TIMESTEP, state.obstacles, PLATFORM_COUNT);
-        state.ship->Update(FIXED_TIMESTEP, state.landingPlane, PLATFORM_COUNT);
-        
+        state.ship->UpdateRockCollision(FIXED_TIMESTEP, state.obstacles, PLATFORM_COUNT);
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
+
+
+    //check rock collision
+    //state.landingPlane->UpdateRockCollision(FIXED_TIMESTEP, state.obstacles,PLATFORM_COUNT);
+    
+    //check plane collision
+    //state.ship->UpdatePlaneCollision(FIXED_TIMESTEP, state.landingPlane);
+
+    state.ship->Update();
+
 }
 
 

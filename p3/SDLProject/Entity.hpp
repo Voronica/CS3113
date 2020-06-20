@@ -60,10 +60,18 @@ public:
     
     Entity();
     
-    bool checkCollision(Entity *other);
-    void checkCollisionsX(Entity *objects, int objectCount);
-    void checkCollisionsY(Entity *objects, int objectCount);
-    void Update(float deltaTime, Entity *platforms, int platformCount);
+    Entity* checkCollision(Entity *other);
+    
+    void checkCollisionsX_Rock(Entity *objects, int objectCount);
+    void checkCollisionsY_Rock(Entity *objects, int objectCount);
+    
+    void checkCollisionX_Plane(Entity *object);
+    void checkCollisionY_Plane(Entity *object);
+    
+    void UpdateRockCollision(float deltaTime, Entity *rocks, int platformCount);
+    void UpdatePlaneCollision(float deltaTime, Entity *plane);
+    
+    void Update();
     void Render(ShaderProgram *program);
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
 };

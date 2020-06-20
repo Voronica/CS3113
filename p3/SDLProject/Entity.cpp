@@ -19,20 +19,20 @@ Entity::Entity()
     modelMatrix = glm::mat4(1.0f);
 }
 
-bool Entity::checkCollision(Entity *other) {
-    if (isActive == false || other->isActive == false) return false;
+Entity* Entity::checkCollision(Entity *other) {
+    if (isActive == false || other->isActive == false) return nullptr;
     
     float xdist = fabs(position.x - other->position.x) - ((width + other->width) /2.0f);
     float ydist = fabs(position.y - other->position.y) - ((height + other->height) /2.0f);
     
-    if (xdist < 0 && ydist < 0) return true;
-    return false;
+    if (xdist < 0 && ydist < 0) return other;
+    return nullptr;
 }
 
-void Entity::checkCollisionsX(Entity *objects, int objectCount) {
+void Entity::checkCollisionsX_Rock(Entity *objects, int objectCount) {
     for (int i = 0; i < objectCount; i++) {
         Entity *object = &objects[i];
-        if (checkCollision(object)) {
+        if (checkCollision(object) != nullptr) {
             float xdist = fabs(position.x - object->position.x);
             float penetrationX = fabs(xdist - (width / 2.0f) - (object->width / 2.0f));
             if (velocity.x > 0) {
@@ -49,11 +49,11 @@ void Entity::checkCollisionsX(Entity *objects, int objectCount) {
         }
     }
 
-void Entity::checkCollisionsY(Entity *objects, int objectCount) {
+void Entity::checkCollisionsY_Rock(Entity *objects, int objectCount) {
     
     for (int i = 0; i < objectCount; i++) {
         Entity *object = &objects[i];
-        if (checkCollision(object)) {
+        if (checkCollision(object) != nullptr) {
             float ydist = fabs(position.y - object->position.y);
             float penetrationY = fabs(ydist - (height / 2.0f) - (object->height / 2.0f));
             if (velocity.y > 0) {
@@ -69,53 +69,92 @@ void Entity::checkCollisionsY(Entity *objects, int objectCount) {
             }
         }
     }
+void Entity::checkCollisionX_Plane(Entity *object) {
+    if(checkCollision(object) != nullptr) {
+        float xdist = fabs(position.x - object->position.x);
+        float penetrationX = fabs(xdist - (width / 2.0f) - (object->width / 2.0f));
+        if (velocity.x > 0) {
+            position.x -= penetrationX;
+            velocity.x = 0;
+            collidedRight = true;
+               }
+        else if (velocity.x < 0) {
+            position.x += penetrationX;
+            velocity.x = 0;
+            collidedLeft = true;
+               }
+    }
+}
+
+void Entity::checkCollisionY_Plane(Entity *object) {
+    if(checkCollision(object) != nullptr) {
+        float ydist = fabs(position.y - object->position.y);
+        float penetrationY = fabs(ydist - (height / 2.0f) - (object->height / 2.0f));
+        if (velocity.y > 0) {
+            position.y -= penetrationY;
+            velocity.y = 0;
+            collidedTop = true;
+               }
+        else if (velocity.y < 0) {
+            position.y += penetrationY;
+            velocity.y = 0;
+            collidedBottom = true;
+            }
+        }
+    }
 
 
 
-void Entity::Update(float deltaTime, Entity *platforms, int platformCount) {
-    if (isActive == false) return;
+
+void Entity::UpdateRockCollision(float deltaTime, Entity *rocks, int platformCount) {
     
+    
+    velocity.x = movement.x * speed;
+    velocity += acceleration * deltaTime;
+    position += velocity * deltaTime;
+    
+    position.y += velocity.y * deltaTime;     // Move on Y
+    checkCollisionsY_Rock(rocks, platformCount);    // Fix if needed
+    
+    position.x += velocity.x * deltaTime;       // Move on X
+    checkCollisionsX_Rock(rocks, platformCount);// Fix if needed
+    
+    modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, position);
+}
+
+void Entity::UpdatePlaneCollision(float deltaTime, Entity *plane) {
+    
+    
+    velocity.x = movement.x * speed;
+    velocity += acceleration * deltaTime;
+    position += velocity * deltaTime;
+    
+    position.y += velocity.y * deltaTime;     // Move on Y
+    checkCollisionY_Plane(plane);    // Fix if needed
+    
+    position.x += velocity.x * deltaTime;       // Move on X
+    checkCollisionX_Plane(plane);// Fix if needed
+    
+    
+    modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, position);
+}
+
+void Entity::Update() {
+    if (isActive == false) return;
+    if(checkCollision(<#Entity *other#>)) {
+        
+    }
     collidedTop = false;
     collidedBottom = false;
     collidedLeft = false;
     collidedRight = false;
     
     
-    if (animIndices != NULL) {
-        if (glm::length(movement) != 0) {
-            animTime += deltaTime;
-
-            if (animTime >= 0.25f)
-            {
-                animTime = 0.0f;
-                animIndex++;
-                if (animIndex >= animFrames)
-                {
-                    animIndex = 0;
-                }
-            }
-        } else {
-            animIndex = 0;
-        }
-    }
     
-    if(jump) {
-        jump = false;
-        velocity.y += jumpPower;
-    }
-    velocity.x = movement.x * speed;
-    velocity += acceleration * deltaTime;
-    position += velocity * deltaTime;
-    
-    position.y += velocity.y * deltaTime;     // Move on Y
-    checkCollisionsY(platforms, platformCount);    // Fix if needed
-    
-    position.x += velocity.x * deltaTime;       // Move on X
-    checkCollisionsX(platforms, platformCount);// Fix if needed
-    
-    modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, position);
 }
+
 
 void Entity::DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index)
 {
