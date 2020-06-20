@@ -308,8 +308,7 @@ void Update() {
     //check plane collision
     //state.ship->UpdatePlaneCollision(FIXED_TIMESTEP, state.landingPlane);
 
-    state.ship->Update();
-
+    state.ship->Update(<#float deltaTime#>, <#Entity *object#>, <#int platformCount#>);
 }
 
 

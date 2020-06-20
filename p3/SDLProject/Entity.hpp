@@ -71,7 +71,7 @@ public:
     void UpdateRockCollision(float deltaTime, Entity *rocks, int platformCount);
     void UpdatePlaneCollision(float deltaTime, Entity *plane);
     
-    void Update();
+    void Update(float deltaTime, Entity *object, int platformCount);
     void Render(ShaderProgram *program);
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
 };

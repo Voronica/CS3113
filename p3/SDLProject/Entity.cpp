@@ -109,50 +109,50 @@ void Entity::checkCollisionY_Plane(Entity *object) {
 void Entity::UpdateRockCollision(float deltaTime, Entity *rocks, int platformCount) {
     
     
-    velocity.x = movement.x * speed;
-    velocity += acceleration * deltaTime;
-    position += velocity * deltaTime;
-    
-    position.y += velocity.y * deltaTime;     // Move on Y
     checkCollisionsY_Rock(rocks, platformCount);    // Fix if needed
     
-    position.x += velocity.x * deltaTime;       // Move on X
     checkCollisionsX_Rock(rocks, platformCount);// Fix if needed
     
-    modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, position);
+
 }
 
 void Entity::UpdatePlaneCollision(float deltaTime, Entity *plane) {
     
     
-    velocity.x = movement.x * speed;
-    velocity += acceleration * deltaTime;
-    position += velocity * deltaTime;
     
-    position.y += velocity.y * deltaTime;     // Move on Y
     checkCollisionY_Plane(plane);    // Fix if needed
     
-    position.x += velocity.x * deltaTime;       // Move on X
     checkCollisionX_Plane(plane);// Fix if needed
     
     
-    modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, position);
+    
 }
 
-void Entity::Update() {
+void Entity::Update(float deltaTime, Entity *object, int platformCount) {
     if (isActive == false) return;
-    if(checkCollision(<#Entity *other#>)) {
-        
-    }
+    
     collidedTop = false;
     collidedBottom = false;
     collidedLeft = false;
     collidedRight = false;
     
+    if(checkCollision(object) != nullptr) {
+        if(checkCollision(object)->entityName == "tile") {
+            UpdateRockCollision(deltaTime, object, platformCount);
+        }
+        if(checkCollision(object)->entityName == "plane") {
+            UpdatePlaneCollision(deltaTime, object);
+        }
+    }
+    velocity.x = movement.x * speed;
+    velocity += acceleration * deltaTime;
+    position += velocity * deltaTime;
     
+    position.y += velocity.y * deltaTime;     // Move on Y
+    position.x += velocity.x * deltaTime;       // Move on X
     
+    modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, position);
 }
 
 
