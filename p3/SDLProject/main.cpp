@@ -21,6 +21,7 @@
 
 
 
+
 struct GameState {
     Entity *ship;
     Entity *obstacles;
@@ -31,6 +32,9 @@ GameState state;
 
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
+
+//Initialize fonts
+GLuint fontTextureID;
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
@@ -86,7 +90,7 @@ void Initialize() {
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-   
+    fontTextureID = LoadTexture("font2.png");
     
     // Initialize ship
     state.ship = new Entity();
@@ -372,13 +376,10 @@ void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string text,
     glDisableVertexAttribArray(program->texCoordAttribute);
 }
 
-//Initialize fonts
-GLuint fontTextureID = LoadTexture("font2.png");
+
 
 void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
-    
-    DrawText(&program, fontTextureID, "Lives: " + std::to_string(3), 0.5f, -0.25f, glm::vec3(-4.75f, 3.3, 0));
     
     state.ship->Render(&program);
     
@@ -388,10 +389,20 @@ void Render() {
     
     state.obstacles[PLATFORM_COUNT-1].Render2(&program);
     
+    if (state.ship->landSuccess == false) {
+        DrawText(&program, fontTextureID, "Failed" , 0.5f, -0.25f, glm::vec3(-4.75f, 3.3, 0));
+    }
     
-
+    else if (state.ship->landSuccess == true) {
+        DrawText(&program, fontTextureID, "Success" , 0.5f, -0.25f, glm::vec3(-4.75f, 3.3, 0));
+        
+    }
+ 
+    
     
     SDL_GL_SwapWindow(displayWindow);
+    
+    
 }
 
 

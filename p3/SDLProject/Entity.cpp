@@ -33,6 +33,12 @@ void Entity::checkCollisionsX_Rock(Entity *objects, int objectCount) {
     for (int i = 0; i < objectCount; i++) {
         Entity *object = &objects[i];
         if (checkCollision(object) != nullptr) {
+            //check if land succeed on the plane
+            
+            if (checkCollision(object)->entityName == "plane") {
+                object->landSuccess = true;
+            }
+            
             float xdist = fabs(position.x - object->position.x);
             float penetrationX = fabs(xdist - (width / 2.0f) - (object->width / 2.0f));
             if (velocity.x > 0) {
@@ -54,8 +60,15 @@ void Entity::checkCollisionsY_Rock(Entity *objects, int objectCount) {
     for (int i = 0; i < objectCount; i++) {
         Entity *object = &objects[i];
         if (checkCollision(object) != nullptr) {
+            
+            //check if land succeed on the plane
+            if (checkCollision(object)->entityName == "plane") {
+                object->landSuccess = true;
+            }
+            
             float ydist = fabs(position.y - object->position.y);
             float penetrationY = fabs(ydist - (height / 2.0f) - (object->height / 2.0f));
+            
             if (velocity.y > 0) {
                 position.y -= penetrationY;
                 velocity.y = 0;
