@@ -19,10 +19,7 @@
 
 #define PLATFORM_COUNT 27
 
-GLuint LoadTexture(const char* filePath);
 
-//Initialize fonts
-GLuint fontTextureID = LoadTexture("font2.png");
 
 struct GameState {
     Entity *ship;
@@ -110,6 +107,7 @@ void Initialize() {
     
     //Initialize Obstacles
     state.obstacles = new Entity[PLATFORM_COUNT];
+    
     
     GLuint platformTextureID = LoadTexture("tile.png");
     
@@ -373,6 +371,9 @@ void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string text,
     glDisableVertexAttribArray(program->positionAttribute);
     glDisableVertexAttribArray(program->texCoordAttribute);
 }
+
+//Initialize fonts
+GLuint fontTextureID = LoadTexture("font2.png");
 
 void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
