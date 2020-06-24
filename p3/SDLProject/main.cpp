@@ -7,6 +7,7 @@
 #define GL_GLEXT_PROTOTYPES 1
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include <vector>
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
@@ -16,7 +17,12 @@
 
 #include "Entity.hpp"
 
-#define PLATFORM_COUNT 26
+#define PLATFORM_COUNT 27
+
+GLuint LoadTexture(const char* filePath);
+
+//Initialize fonts
+GLuint fontTextureID = LoadTexture("font2.png");
 
 struct GameState {
     Entity *ship;
@@ -54,6 +60,7 @@ GLuint LoadTexture(const char* filePath) {
 }
 
 
+
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
     displayWindow = SDL_CreateWindow("Textured!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
@@ -83,14 +90,13 @@ void Initialize() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
    
-    // Initialize Game Objects
     
     // Initialize ship
     state.ship = new Entity();
     state.ship->entityName = "spaceShip";
     state.ship->position = glm::vec3(-1.75, 3.25, 0);
     state.ship->movement = glm::vec3(0);
-    state.ship->acceleration = glm::vec3(0, -0.05f, 0);
+    state.ship->acceleration = glm::vec3(0, -0.08f, 0);
     state.ship->speed = 1.5f;
     state.ship->textureID = LoadTexture("ship.png");
     
@@ -99,16 +105,7 @@ void Initialize() {
     state.ship->height = 0.8f;
     state.ship->width = 0.6f;
     
-    //Initialize landingPlane
     
-    state.landingPlane = new Entity();
-    state.landingPlane->entityName = "plane";
-    state.landingPlane->position = glm::vec3(2.5, -2.25, 0);
-    state.landingPlane->movement = glm::vec3(0);
-    state.landingPlane->textureID = LoadTexture("landingpad.png");
-    
-    state.landingPlane->height = 0.8f;
-    state.landingPlane->width = 0.6f;
     
     
     //Initialize Obstacles
@@ -221,14 +218,29 @@ void Initialize() {
     state.obstacles[25].textureID = platformTextureID;
     state.obstacles[25].position = glm::vec3(2.5f, 0.75f, 0);
     
+    //Initialize landing plane
+    //This is the landing plane
+
+    state.obstacles[26].entityName = "plane";
+    state.obstacles[26].position = glm::vec3(2.5, -2.6, 0);
+    state.obstacles[26].textureID = LoadTexture("landingpad.png");
+    state.obstacles[26].width = 1.7f;
+    state.obstacles[26].height = 0.5f;
+    
+    
+    for (int i = 0; i < 26; i++) {
+        state.obstacles[i].width = 0.9f;
+        state.obstacles[i].height = 1.0f;
+    }
     
 
     
     for (int i = 0; i < PLATFORM_COUNT; i++) {
-        state.obstacles[i].UpdateRockCollision(0, NULL, 0);
+        state.obstacles[i].Update(0, NULL, 0);
     }
  
 }
+
 
 void ProcessInput() {
     
@@ -296,11 +308,13 @@ void Update() {
     }
     while (deltaTime >= FIXED_TIMESTEP) {
     // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
-        state.ship->UpdateRockCollision(FIXED_TIMESTEP, state.obstacles, PLATFORM_COUNT);
+        state.ship->Update(FIXED_TIMESTEP, state.obstacles, PLATFORM_COUNT);
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
-
+    
+ 
+    //state.ship->Update(deltaTime, state.obstacles, PLATFORM_COUNT);
 
     //check rock collision
     //state.landingPlane->UpdateRockCollision(FIXED_TIMESTEP, state.obstacles,PLATFORM_COUNT);
@@ -308,20 +322,73 @@ void Update() {
     //check plane collision
     //state.ship->UpdatePlaneCollision(FIXED_TIMESTEP, state.landingPlane);
 
-    state.ship->Update(<#float deltaTime#>, <#Entity *object#>, <#int platformCount#>);
+    
 }
 
+void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string text,
+                                 float size, float spacing, glm::vec3 position) {
+    
+    float width = 1.0f / 16.0f; float height = 1.0f / 16.0f;
+    
+    std::vector<float> vertices;
+    std::vector<float> texCoords;
+    
+    for(int i = 0; i < text.size(); i++) {
+            int index = (int)text[i];
+            float offset = (size + spacing) * i;
+        
+            float u = (float)(index % 16) / 16.0f;
+            float v = (float)(index / 16) / 16.0f;
+        
+            vertices.insert(vertices.end(), {
+                offset + (-0.5f * size), 0.5f * size,
+                offset + (-0.5f * size), -0.5f * size,
+                offset + (0.5f * size), 0.5f * size,
+                offset + (0.5f * size), -0.5f * size,
+                offset + (0.5f * size), 0.5f * size,
+                offset + (-0.5f * size), -0.5f * size,
+            });
+            texCoords.insert(texCoords.end(), {
+                u, v,
+                u, v + height,
+                u + width, v,
+                u + width, v + height,
+                u + width, v,
+                u, v + height,
+            });
+        } // end of for loop
+    
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, position);
+    program->SetModelMatrix(modelMatrix);
+    
+    glUseProgram(program->programID);
+    
+    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices.data()); glEnableVertexAttribArray(program->positionAttribute);
+    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords.data()); glEnableVertexAttribArray(program->texCoordAttribute);
+    
+    glBindTexture(GL_TEXTURE_2D, fontTextureID);
+    glDrawArrays(GL_TRIANGLES, 0, (int)(text.size() * 6));
+    
+    glDisableVertexAttribArray(program->positionAttribute);
+    glDisableVertexAttribArray(program->texCoordAttribute);
+}
 
 void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
     
-    for (int i = 0; i < PLATFORM_COUNT; i++) {
+    DrawText(&program, fontTextureID, "Lives: " + std::to_string(3), 0.5f, -0.25f, glm::vec3(-4.75f, 3.3, 0));
+    
+    state.ship->Render(&program);
+    
+    for (int i = 0; i < PLATFORM_COUNT-1; i++) {
         state.obstacles[i].Render(&program);
     }
     
+    state.obstacles[PLATFORM_COUNT-1].Render2(&program);
     
-    state.ship->Render(&program);
-    state.landingPlane->Render(&program);
+    
+
     
     SDL_GL_SwapWindow(displayWindow);
 }

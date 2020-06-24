@@ -65,13 +65,10 @@ public:
     void checkCollisionsX_Rock(Entity *objects, int objectCount);
     void checkCollisionsY_Rock(Entity *objects, int objectCount);
     
-    void checkCollisionX_Plane(Entity *object);
-    void checkCollisionY_Plane(Entity *object);
     
-    void UpdateRockCollision(float deltaTime, Entity *rocks, int platformCount);
-    void UpdatePlaneCollision(float deltaTime, Entity *plane);
     
-    void Update(float deltaTime, Entity *object, int platformCount);
+    void Update(float deltaTime, Entity *obstacles, int platformCount);
     void Render(ShaderProgram *program);
+    void Render2(ShaderProgram *program);
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
 };
