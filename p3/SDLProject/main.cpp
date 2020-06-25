@@ -32,6 +32,7 @@ GameState state;
 
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
+bool gameOver = false;
 
 //Initialize fonts
 GLuint fontTextureID;
@@ -231,8 +232,8 @@ void Initialize() {
     
     
     for (int i = 0; i < 26; i++) {
-        state.obstacles[i].width = 0.9f;
-        state.obstacles[i].height = 1.0f;
+        state.obstacles[i].width = 1.35f;
+        state.obstacles[i].height = 1.2f;
     }
     
 
@@ -245,50 +246,49 @@ void Initialize() {
 
 
 void ProcessInput() {
-    
-    state.ship->movement = glm::vec3(0);
-    
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        switch (event.type) {
-            case SDL_QUIT:
-            case SDL_WINDOWEVENT_CLOSE:
-                gameIsRunning = false;
-                break;
-                
-            case SDL_KEYDOWN:
-                switch (event.key.keysym.sym) {
-                    case SDLK_LEFT:
-                        // Move the ship left
-                        break;
-                        
-                    case SDLK_RIGHT:
-                        // Move the ship right
-                        break;
-                        
-                    case SDLK_SPACE:
-                        break;
-                }
-                break; // SDL_KEYDOWN
+        state.ship->movement = glm::vec3(0);
+        
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT:
+                case SDL_WINDOWEVENT_CLOSE:
+                    gameIsRunning = false;
+                    break;
+                    
+                case SDL_KEYDOWN:
+                    switch (event.key.keysym.sym) {
+                        case SDLK_LEFT:
+                            // Move the ship left
+                            break;
+                            
+                        case SDLK_RIGHT:
+                            // Move the ship right
+                            break;
+                            
+                        case SDLK_SPACE:
+                            break;
+                    }
+                    break; // SDL_KEYDOWN
+            }
         }
+        
+        const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+        if (keys[SDL_SCANCODE_LEFT]) {
+            state.ship->movement.x = -0.5f;
+        
+        }
+        else if (keys[SDL_SCANCODE_RIGHT]) {
+            state.ship->movement.x = 0.5f;
+        }
+        
+
+
+        if (glm::length(state.ship->movement) > 1.0f) {
+            state.ship->movement = glm::normalize(state.ship->movement);
     }
     
-    const Uint8 *keys = SDL_GetKeyboardState(NULL);
-
-    if (keys[SDL_SCANCODE_LEFT]) {
-        state.ship->movement.x = -0.5f;
-    
-    }
-    else if (keys[SDL_SCANCODE_RIGHT]) {
-        state.ship->movement.x = 0.5f;
-    }
-    
-
-
-    if (glm::length(state.ship->movement) > 1.0f) {
-        state.ship->movement = glm::normalize(state.ship->movement);
-    }
-
 }
 
  #define FIXED_TIMESTEP 0.0166666f
@@ -379,6 +379,7 @@ void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string text,
 
 
 void Render() {
+    
     glClear(GL_COLOR_BUFFER_BIT);
     
     state.ship->Render(&program);
@@ -389,19 +390,23 @@ void Render() {
     
     state.obstacles[PLATFORM_COUNT-1].Render2(&program);
     
-    if (state.ship->landSuccess == false) {
-        DrawText(&program, fontTextureID, "Failed" , 0.5f, -0.25f, glm::vec3(-4.75f, 3.3, 0));
-    }
-    
-    else if (state.ship->landSuccess == true) {
-        DrawText(&program, fontTextureID, "Success" , 0.5f, -0.25f, glm::vec3(-4.75f, 3.3, 0));
+    if (state.ship->collideSomething) {
+        if (state.ship->collideRock) {
+            DrawText(&program, fontTextureID, "Mission Failed" , 0.5f, -0.25f, glm::vec3(-2.0, 0, 0));
+            
+            
+        }
+        else if (state.ship->landSuccess) {
+            DrawText(&program, fontTextureID, "Mission Successful" , 0.5f, -0.25f, glm::vec3(-2.0, 0, 0));
+            
+            
+        }
         
     }
- 
+    
     
     
     SDL_GL_SwapWindow(displayWindow);
-    
     
 }
 

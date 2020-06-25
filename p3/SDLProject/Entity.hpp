@@ -58,6 +58,8 @@ public:
     bool collidedLeft = false;
     bool collidedRight = false;
     
+    bool collideSomething = false;
+    bool collideRock = false;
     bool landSuccess = false;
     
     Entity();
