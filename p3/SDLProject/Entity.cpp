@@ -25,7 +25,10 @@ Entity* Entity::checkCollision(Entity *other) {
     float xdist = fabs(position.x - other->position.x) - ((width + other->width) /2.0f);
     float ydist = fabs(position.y - other->position.y) - ((height + other->height) /2.0f);
     
-    if (xdist < 0 && ydist < 0) return other;
+    if (xdist < 0 && ydist < 0) {
+        collideSomething = true;
+        gameOver = true;
+        return other;}
     return nullptr;
 }
 
@@ -33,7 +36,6 @@ void Entity::checkCollisionsX_Rock(Entity *objects, int objectCount) {
     for (int i = 0; i < objectCount; i++) {
         Entity *object = &objects[i];
         if (checkCollision(object) != nullptr) {
-            collideSomething = true;
             if (checkCollision(object)->entityName == "plane") landSuccess = false;
             else if (checkCollision(object)->entityName == "tile") collideRock = true;
             
@@ -58,7 +60,6 @@ void Entity::checkCollisionsY_Rock(Entity *objects, int objectCount) {
     for (int i = 0; i < objectCount; i++) {
         Entity *object = &objects[i];
         if (checkCollision(object) != nullptr) {
-            collideSomething = true;
             if (checkCollision(object)->entityName == "plane") landSuccess = true;
             else if (checkCollision(object)->entityName == "tile") collideRock = true;
             
@@ -93,10 +94,10 @@ void Entity::Update(float deltaTime, Entity *obstacles, int platformCount) {
     velocity.x = movement.x * speed;
     velocity += acceleration * deltaTime;
     
-    //position += velocity * deltaTime;
     
     position.y += velocity.y * deltaTime;// Move on Y
     checkCollisionsY_Rock(obstacles, platformCount);
+    
     
     position.x += velocity.x * deltaTime;     // Move on X
     checkCollisionsX_Rock(obstacles, platformCount);

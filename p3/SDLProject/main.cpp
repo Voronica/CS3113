@@ -246,8 +246,10 @@ void Initialize() {
 
 
 void ProcessInput() {
+  
         state.ship->movement = glm::vec3(0);
-        
+    
+    
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -275,20 +277,28 @@ void ProcessInput() {
         
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
-        if (keys[SDL_SCANCODE_LEFT]) {
-            state.ship->movement.x = -0.5f;
+    if(!state.ship->collideSomething) {
         
-        }
-        else if (keys[SDL_SCANCODE_RIGHT]) {
-            state.ship->movement.x = 0.5f;
-        }
+            if (keys[SDL_SCANCODE_LEFT]) {
         
-
-
-        if (glm::length(state.ship->movement) > 1.0f) {
-            state.ship->movement = glm::normalize(state.ship->movement);
+                state.ship->acceleration.x -= 0.5f;
+                state.ship->movement.x = -0.5f;
+                
+            }
+            else if (keys[SDL_SCANCODE_RIGHT]) {
+                
+                
+                state.ship->acceleration.x += 0.5f;
+                state.ship->movement.x = 0.5f;
+            
+                
+            }
     }
+    else state.ship->acceleration.x = 0.0f;
     
+    if (glm::length(state.ship->movement) > 1.0f) {
+        state.ship->movement = glm::normalize(state.ship->movement);
+        }
 }
 
  #define FIXED_TIMESTEP 0.0166666f
@@ -315,14 +325,6 @@ void Update() {
     }
     accumulator = deltaTime;
     
- 
-    //state.ship->Update(deltaTime, state.obstacles, PLATFORM_COUNT);
-
-    //check rock collision
-    //state.landingPlane->UpdateRockCollision(FIXED_TIMESTEP, state.obstacles,PLATFORM_COUNT);
-    
-    //check plane collision
-    //state.ship->UpdatePlaneCollision(FIXED_TIMESTEP, state.landingPlane);
 
     
 }

@@ -62,6 +62,8 @@ public:
     bool collideRock = false;
     bool landSuccess = false;
     
+    bool gameOver = false;
+    
     Entity();
     
     Entity* checkCollision(Entity *other);
