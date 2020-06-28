@@ -233,7 +233,7 @@ void Initialize() {
     
     for (int i = 0; i < 26; i++) {
         state.obstacles[i].width = 1.35f;
-        state.obstacles[i].height = 1.2f;
+        state.obstacles[i].height = 1.05f;
     }
     
 
