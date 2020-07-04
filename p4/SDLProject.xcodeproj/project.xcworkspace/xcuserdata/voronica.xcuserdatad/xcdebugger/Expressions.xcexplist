@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "glm::vec&lt;3, float, (glm::qualifier)0&gt; glm::operator-&lt;float, (glm::qualifier)0&gt;(glm::vec&lt;3, float, (glm::qualifier)0&gt; const&amp;, glm::vec&lt;3, float, (glm::qualifier)0&gt; const&amp;):type_vec3.inl">
+      </ContextState>
+      <ContextState
+         contextName = "Entity::AIWAITANDGO(Entity*):Entity.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "position.x - player-&gt;position.x">
+            </PersistentString>
+            <PersistentString
+               value = "glm::distance(position, player-&gt;position)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
