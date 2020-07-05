@@ -89,7 +89,7 @@ public:
     void checkCollisionsX_Enemy(Entity *objects, int objectCount);
     Entity* checkCollisionsY_Enemy(Entity *objects, int objectCount);
 
-    void UpdateAI(Entity *player, float deltaTime);
+    void UpdateAI(Entity *player, float deltaTime, Entity *enemies, int enemyCount);
     void Update(float deltaTime, Entity *player, Entity *obstacles, int platformCount, Entity *enemies, int enemyCount);
     
     void Render(ShaderProgram *program);

@@ -190,24 +190,9 @@ void Entity::AI(Entity *player) {
     }
 }
 
-void Entity::UpdateAI(Entity *player, float deltaTime) {
-    switch (aiType) {
-        case WAITANDEAT:
-            if (player->killEnemySuccess) {
-            //AI disapear
-            this->position.y -= 0.9f;
-            break;
-        case WALKER:
-            break;
-        case WAITANDGO:
-            if (player->killEnemySuccess) {
-                //AI disapear
-                this->position.y -= 0.9f;
-                
-            }
-            break;
-    }
-        }
+void Entity::UpdateAI(Entity *player, float deltaTime, Entity *enemies, int enemyCount) {
+    Entity *AI_tobe_Updated = checkCollisionsY_Enemy(enemies, enemyCount);
+    AI_tobe_Updated->position.y -= 0.9f;
 }
 void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int platformCount, Entity *enemies, int enemyCount) {
     
@@ -219,7 +204,9 @@ void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int plat
     
         if (entityType == ENEMY) {
             AI(player);
-            UpdateAI(player, deltaTime);  //Update AI, dispear
+            if (checkCollisionsY_Enemy(enemies, enemyCount) != nullptr) {
+                UpdateAI(player, deltaTime, enemies, enemyCount);  //Update AI, dispear
+            }
         }
         else {
             checkCollisionsX_Enemy(enemies, enemyCount);
