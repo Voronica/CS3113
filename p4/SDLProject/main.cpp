@@ -42,6 +42,7 @@ SDL_Window* displayWindow;
 bool gameIsRunning = true;
 bool gameOver = false;
 
+
 //Initialize fonts
 GLuint fontTextureID;
 
@@ -258,28 +259,40 @@ void Initialize() {
 
     
     for (int i = 0; i < PLATFORM_COUNT; i++) {
-        state.obstacles[i].Update(0, NULL, NULL, 0);
+        state.obstacles[i].Update(0, state.player, NULL, 0, NULL, 0);
     }
     
     
     //
     state.enemies = new Entity[ENEMY_COUNT];
     
-    state.enemies[0].textureID = LoadTexture("plantsSleep.png");
+    if (state.enemies[0].startAttack == false) {
+        state.enemies[0].textureID = LoadTexture("plantsSleep.png");
+    }
+    else state.enemies[0].textureID = LoadTexture("plantsActivated.png");
+    
     state.enemies[0].position = glm::vec3(-3.6f, -3.25f, 0);
     state.enemies[0].entityType = ENEMY;
+    state.enemies[0].aiType = WAITANDEAT;
+    state.enemies[0].aiState = IDLE;
+    
+    
     
     state.enemies[1].textureID = LoadTexture("ctg.png");
     state.enemies[1].position = glm::vec3(2.0f, -2.28f, 0);
     state.enemies[1].speed = 1;
+    state.enemies[1].acceleration = glm::vec3(0, -10.0f, 0);
+    state.enemies[1].movement = glm::vec3(0);
+    
     state.enemies[1].entityType = ENEMY;
     state.enemies[1].aiType = WAITANDGO;
     state.enemies[1].aiState = IDLE;
     
+    state.enemies[1].width = 0.7f;
+    state.enemies[1].height = 0.9f;
     
-    for (int i = 0; i < ENEMY_COUNT; i++) {
-        state.enemies[i].Update(0, NULL, NULL, 0);
-    }
+    
+    
 
 }
 
@@ -361,10 +374,10 @@ void Update() {
     }
     while (deltaTime >= FIXED_TIMESTEP) {
     // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
-        state.player->Update(FIXED_TIMESTEP, state.player, state.obstacles, PLATFORM_COUNT);
+        state.player->Update(FIXED_TIMESTEP, state.player, state.obstacles, PLATFORM_COUNT, state.enemies, ENEMY_COUNT);
         
         for (int i = 0; i < ENEMY_COUNT; i++) {
-            state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.obstacles, PLATFORM_COUNT);
+            state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.obstacles, PLATFORM_COUNT, state.enemies, ENEMY_COUNT);
             
         }
         
@@ -441,7 +454,11 @@ void Render() {
         state.enemies[i].Render2(&program);
     }
     
-    
+    if(state.player->collideSomething) {
+        if(state.player->collideEnemy) {
+            DrawText(&program, fontTextureID, "Game Over" , 0.5f, -0.25f, glm::vec3(-2.0, 0, 0));
+        }
+    }
     SDL_GL_SwapWindow(displayWindow);
     
 }
@@ -458,6 +475,8 @@ int main(int argc, char* argv[]) {
         ProcessInput();
         Update();
         Render();
+        //std::cout << "x: " << state.enemies[1].position.x << " y: " << state.enemies[1].position.y << std::endl;
+        
     }
     
     Shutdown();

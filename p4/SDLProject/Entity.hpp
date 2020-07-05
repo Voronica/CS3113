@@ -21,7 +21,7 @@
 
 enum EntityType {PLAYER, PLATFORM, ENEMY};
 
-enum AIType {WALKER, WAITANDGO};
+enum AIType {WALKER, WAITANDGO, WAITANDEAT};
 enum AIState {IDLE, WALKING, ATTACKING};
 
 class Entity {
@@ -62,6 +62,7 @@ public:
     int animRows = 0;
     
     bool isActive = true;
+    bool startAttack = false;
     
     bool collidedTop = false;
     bool collidedBottom = false;
@@ -70,7 +71,9 @@ public:
     
     bool collideSomething = false;
     bool collideRock = false;
-    bool landSuccess = false;
+    
+    bool collideEnemy = false;
+    bool killEnemySuccess = false;
     
     bool gameOver = false;
     
@@ -83,11 +86,12 @@ public:
     void checkCollisionsX_Rock(Entity *objects, int objectCount);
     void checkCollisionsY_Rock(Entity *objects, int objectCount);
     
-    void checkCollisionsX_Enemy(Entity *object);
-    void checkCollisionsY_Enemy(Entity *object);
+    void checkCollisionsX_Enemy(Entity *objects, int objectCount);
+    Entity* checkCollisionsY_Enemy(Entity *objects, int objectCount);
 
+    void UpdateAI(Entity *player, float deltaTime);
+    void Update(float deltaTime, Entity *player, Entity *obstacles, int platformCount, Entity *enemies, int enemyCount);
     
-    void Update(float deltaTime, Entity *player, Entity *obstacles, int platformCount);
     void Render(ShaderProgram *program);
     void Render2(ShaderProgram *program);
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
@@ -95,4 +99,5 @@ public:
     void AI(Entity *player);
     void AIWalker();
     void AIWAITANDGO(Entity *player);
+    void AIWAITANDEAT(Entity *player);
 };

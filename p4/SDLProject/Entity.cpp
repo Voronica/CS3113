@@ -77,46 +77,65 @@ void Entity::checkCollisionsY_Rock(Entity *objects, int objectCount) {
         }
     }
 
-void Entity::checkCollisionsY_Enemy(Entity *object) {
-    if (checkCollision(object) != nullptr) {
+Entity* Entity::checkCollisionsY_Enemy(Entity *objects, int objectCount) {
+    Entity *EnemyKilled = nullptr;
     
-        float ydist = fabs(position.y - object->position.y);
-        float penetrationY = fabs(ydist - (height / 2.0f) - (object->height / 2.0f));
-        
-        if (velocity.y > 0) {
-            position.y -= penetrationY;
-            velocity.y = 0;
-            collidedTop = true;
-               }
-        else if (velocity.y < 0) {
-            position.y += penetrationY;
-            velocity.y = 0;
-            collidedBottom = true;
-            }
-    }
+    for (int i = 0; i < objectCount; i++) {
+    Entity *object = &objects[i];
+     if (checkCollision(object) != nullptr) {
+    
+         
+         float ydist = fabs(position.y - object->position.y);
+         float penetrationY = fabs(ydist - (height / 2.0f) - (object->height / 2.0f));
+         
+         if (velocity.y > 0) {
+             position.y -= penetrationY;
+             velocity.y = 0;
+             collidedTop = true;
+             
+             //collide with an enemy, lose
+             collideEnemy = true;
+                }
+         else if (velocity.y < 0) {
+             position.y += penetrationY;
+             velocity.y = 0;
+             collidedBottom = true;
+             
+             //if collide on top, kill enemy success
+             killEnemySuccess = true;
+             EnemyKilled = object;
+             }
+         }
+     }
+    
+    return EnemyKilled;
 }
     
-void Entity::checkCollisionsX_Enemy(Entity *object) {
+void Entity::checkCollisionsX_Enemy(Entity *objects, int objectCount) {
+    for (int i = 0; i < objectCount; i++) {
+    Entity *object = &objects[i];
     if (checkCollision(object) != nullptr) {
-    
+        
         float xdist = fabs(position.x - object->position.x);
         float penetrationX = fabs(xdist - (width / 2.0f) - (object->width / 2.0f));
         if (velocity.x > 0) {
             position.x -= penetrationX;
             velocity.x = 0;
             collidedRight = true;
+            //collide with an enemy, lose
+            collideEnemy = true;
                }
         else if (velocity.x < 0) {
             position.x += penetrationX;
             velocity.x = 0;
             collidedLeft = true;
+            //collide with an enemy, lose
+            collideEnemy = true;
                }
+        }
     }
 }
 
-void Entity::AIWalker() {
-    movement = glm::vec3(-1, 0, 0);
-}
 
 void Entity::AIWAITANDGO(Entity *player) {
     switch (aiState) {
@@ -129,6 +148,13 @@ void Entity::AIWAITANDGO(Entity *player) {
             
         case WALKING:
             
+            if (player->position.x - position.x < -2.0f) {
+                movement = glm::vec3(-1, 0, 0);
+            }
+            
+            else if (player->position.x - position.x > 2.0f) {
+                movement = glm::vec3(1, 0, 0);
+            }
             break;
             
         case ATTACKING:
@@ -136,17 +162,54 @@ void Entity::AIWAITANDGO(Entity *player) {
     }
 }
 
+void Entity::AIWAITANDEAT(Entity *player) {
+    switch(aiState) {
+        case IDLE:
+            if(glm::distance(position, player->position) < 2.0f) {
+                aiState = ATTACKING;
+                
+            }
+        case WALKING:
+            break;
+        case ATTACKING:
+            startAttack = true;  //flower change to attacking mode
+            position = glm::vec3(-3.6f, -3.0f, 0);
+            break;
+    }
+}
 void Entity::AI(Entity *player) {
     switch(aiType) {
+        case WAITANDEAT:
+            AIWAITANDEAT(player);
+            break;
         case WALKER:
-            AIWalker();
             break;
         case WAITANDGO:
             AIWAITANDGO(player);
             break;
     }
 }
-void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int platformCount) {
+
+void Entity::UpdateAI(Entity *player, float deltaTime) {
+    switch (aiType) {
+        case WAITANDEAT:
+            if (player->killEnemySuccess) {
+            //AI disapear
+            this->position.y -= 0.9f;
+            break;
+        case WALKER:
+            break;
+        case WAITANDGO:
+            if (player->killEnemySuccess) {
+                //AI disapear
+                this->position.y -= 0.9f;
+                
+            }
+            break;
+    }
+        }
+}
+void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int platformCount, Entity *enemies, int enemyCount) {
     
     
         collidedTop = false;
@@ -156,6 +219,11 @@ void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int plat
     
         if (entityType == ENEMY) {
             AI(player);
+            UpdateAI(player, deltaTime);  //Update AI, dispear
+        }
+        else {
+            checkCollisionsX_Enemy(enemies, enemyCount);
+            checkCollisionsY_Enemy(enemies, enemyCount);
         }
         
         if (isActive == false) return;  //If is not active, don't draw
@@ -186,10 +254,12 @@ void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int plat
         
         position.y += velocity.y * deltaTime;// Move on Y
         checkCollisionsY_Rock(obstacles, platformCount);
+        //checkCollisionsY_Enemy(enemies, enemyCount);
         
         
         position.x += velocity.x * deltaTime;     // Move on X
         checkCollisionsX_Rock(obstacles, platformCount);
+        //checkCollisionsX_Enemy(enemies, enemyCount);
         
         
         
