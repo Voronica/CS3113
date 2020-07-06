@@ -190,9 +190,10 @@ void Entity::AI(Entity *player) {
     }
 }
 
-void Entity::UpdateAI(Entity *player, float deltaTime, Entity *enemies, int enemyCount) {
-    Entity *AI_tobe_Updated = checkCollisionsY_Enemy(enemies, enemyCount);
-    AI_tobe_Updated->position.y -= 0.9f;
+void Entity::UpdateAI(Entity *player, Entity *AI, float deltaTime, Entity *enemies, int enemyCount) {
+    //Entity *AI_tobe_Updated = checkCollisionsY_Enemy(enemies, enemyCount);
+    //AI->position.y -= 1.9f;
+    AI->isActive = false;
 }
 void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int platformCount, Entity *enemies, int enemyCount) {
     
@@ -202,10 +203,12 @@ void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int plat
         collidedLeft = false;
         collidedRight = false;
     
+        
         if (entityType == ENEMY) {
             AI(player);
-            if (checkCollisionsY_Enemy(enemies, enemyCount) != nullptr) {
-                UpdateAI(player, deltaTime, enemies, enemyCount);  //Update AI, dispear
+            Entity *ai = checkCollisionsY_Enemy(enemies, enemyCount);
+            if (ai != nullptr) {
+                UpdateAI(player, this, deltaTime, enemies, enemyCount);  //Update AI, dispear
             }
         }
         else {

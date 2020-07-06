@@ -121,8 +121,8 @@
 				DBDF1B592323DE8D007CECB1 /* ShaderProgram.h */,
 				DBDF1B5A2323DE8D007CECB1 /* stb_image.h */,
 				DBDF1B5C2323DE8D007CECB1 /* shaders */,
-				DBDF1B522323DE3F007CECB1 /* main.cpp */,
 				D74E59EB249BC9BD00883AAF /* Entity.cpp */,
+				DBDF1B522323DE3F007CECB1 /* main.cpp */,
 				D74E59EC249BC9BD00883AAF /* Entity.hpp */,
 			);
 			path = SDLProject;

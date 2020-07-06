@@ -265,32 +265,29 @@ void Initialize() {
     
     //
     state.enemies = new Entity[ENEMY_COUNT];
+
+    state.enemies[0].textureID = LoadTexture("ctg.png");
+    state.enemies[0].position = glm::vec3(2.0f, -2.28f, 0);
+    state.enemies[0].speed = 1;
+    state.enemies[0].acceleration = glm::vec3(0, -10.0f, 0);
+    state.enemies[0].movement = glm::vec3(0);
     
-    if (state.enemies[0].startAttack == false) {
-        state.enemies[0].textureID = LoadTexture("plantsSleep.png");
-    }
-    else state.enemies[0].textureID = LoadTexture("plantsActivated.png");
-    
-    state.enemies[0].position = glm::vec3(-3.6f, -3.25f, 0);
     state.enemies[0].entityType = ENEMY;
-    state.enemies[0].aiType = WAITANDEAT;
+    state.enemies[0].aiType = WAITANDGO;
     state.enemies[0].aiState = IDLE;
     
+    state.enemies[0].width = 0.7f;
+    state.enemies[0].height = 0.9f;
     
+    if (state.enemies[1].startAttack == false) {
+        state.enemies[1].textureID = LoadTexture("plantsSleep.png");
+    }
+    else state.enemies[1].textureID = LoadTexture("plantsActivated.png");
     
-    state.enemies[1].textureID = LoadTexture("ctg.png");
-    state.enemies[1].position = glm::vec3(2.0f, -2.28f, 0);
-    state.enemies[1].speed = 1;
-    state.enemies[1].acceleration = glm::vec3(0, -10.0f, 0);
-    state.enemies[1].movement = glm::vec3(0);
-    
+    state.enemies[1].position = glm::vec3(-3.6f, -3.25f, 0);
     state.enemies[1].entityType = ENEMY;
-    state.enemies[1].aiType = WAITANDGO;
+    state.enemies[1].aiType = WAITANDEAT;
     state.enemies[1].aiState = IDLE;
-    
-    state.enemies[1].width = 0.7f;
-    state.enemies[1].height = 0.9f;
-    
     
     
 
