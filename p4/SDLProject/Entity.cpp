@@ -14,7 +14,7 @@ Entity::Entity()
     movement = glm::vec3(0);
     acceleration = glm::vec3(0);
     velocity = glm::vec3(0);
-    speed = 0;
+    speed = glm::vec3(0);
     
     modelMatrix = glm::mat4(1.0f);
 }
@@ -103,7 +103,10 @@ Entity* Entity::checkCollisionsY_Enemy(Entity *objects, int objectCount) {
              
              //if collide on top, kill enemy success
              killEnemySuccess = true;
+             //std::cout << "Beat Enemy!" << std::endl;
              EnemyKilled = object;
+             EnemyKilled->isActive = false;
+             
              }
          }
      }
@@ -136,7 +139,7 @@ void Entity::checkCollisionsX_Enemy(Entity *objects, int objectCount) {
     }
 }
 
-
+//the dwarf
 void Entity::AIWAITANDGO(Entity *player) {
     switch (aiState) {
             
@@ -159,9 +162,13 @@ void Entity::AIWAITANDGO(Entity *player) {
             
         case ATTACKING:
             break;
+            
+        case FLY:
+            break;
     }
 }
 
+// the flower
 void Entity::AIWAITANDEAT(Entity *player) {
     switch(aiState) {
         case IDLE:
@@ -173,7 +180,29 @@ void Entity::AIWAITANDEAT(Entity *player) {
             break;
         case ATTACKING:
             startAttack = true;  //flower change to attacking mode
-            position = glm::vec3(-3.6f, -3.0f, 0);
+            position = glm::vec3(-3.45f, -2.6f, 0);
+            break;
+            
+        case FLY:
+            break;
+    }
+}
+
+//the bird
+void Entity::AIFLYANDATTACK(Entity *player) {
+    switch(aiState) {
+        case IDLE:
+            break;
+        case WALKING:
+            break;
+        case ATTACKING:
+            break;
+        case FLY:
+            if (position.y <= 2.0f) {
+                movement.y += 0.5;
+            }
+            
+            
             break;
     }
 }
@@ -187,36 +216,35 @@ void Entity::AI(Entity *player) {
         case WAITANDGO:
             AIWAITANDGO(player);
             break;
+        case FLYANDATTACK:
+            AIFLYANDATTACK(player);
+            break;
     }
 }
 
-void Entity::UpdateAI(Entity *player, Entity *AI, float deltaTime, Entity *enemies, int enemyCount) {
-    //Entity *AI_tobe_Updated = checkCollisionsY_Enemy(enemies, enemyCount);
-    //AI->position.y -= 1.9f;
-    AI->isActive = false;
-}
+
 void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int platformCount, Entity *enemies, int enemyCount) {
-    
     
         collidedTop = false;
         collidedBottom = false;
         collidedLeft = false;
         collidedRight = false;
     
-        
+        if (isActive == false) return;  //If is not active, don't draw
+
         if (entityType == ENEMY) {
             AI(player);
-            Entity *ai = checkCollisionsY_Enemy(enemies, enemyCount);
-            if (ai != nullptr) {
-                UpdateAI(player, this, deltaTime, enemies, enemyCount);  //Update AI, dispear
-            }
+            //std::cout << "Checking collisions!" << std::endl;
+            checkCollisionsY_Enemy(enemies, enemyCount);
+            
         }
         else {
             checkCollisionsX_Enemy(enemies, enemyCount);
             checkCollisionsY_Enemy(enemies, enemyCount);
         }
         
-        if (isActive == false) return;  //If is not active, don't draw
+        
+        
         
         if (animIndices != NULL) {
             if (glm::length(movement) != 0) {
@@ -238,19 +266,23 @@ void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int plat
             jump = false;
             velocity.y += jumpPower;
         }
-        velocity.x = movement.x * speed;
+        velocity.x = movement.x * speed.x;
+    
+        if(entityName == "bird") {
+            velocity.y = movement.y * speed.y;
+        }
+    
         velocity += acceleration * deltaTime;
         
         
         position.y += velocity.y * deltaTime;// Move on Y
         checkCollisionsY_Rock(obstacles, platformCount);
-        //checkCollisionsY_Enemy(enemies, enemyCount);
+    
         
         
         position.x += velocity.x * deltaTime;     // Move on X
         checkCollisionsX_Rock(obstacles, platformCount);
-        //checkCollisionsX_Enemy(enemies, enemyCount);
-        
+    
         
         
         modelMatrix = glm::mat4(1.0f);
@@ -312,9 +344,57 @@ void Entity::Render(ShaderProgram *program) {
     glDisableVertexAttribArray(program->texCoordAttribute);
 }
 
-void Entity::Render2(ShaderProgram *program) {
+void Entity::RenderFlower_Activated(ShaderProgram *program) {
     program->SetModelMatrix(modelMatrix);
     
+        
+    float vertices[]  = { -0.3, -0.5, 0.5, -0.5, 0.5, 0.5, -0.3, -0.5, 0.5, 0.5, -0.3, 0.5 };
+    float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    
+    glBindTexture(GL_TEXTURE_2D, textureID_Alter);
+    
+    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+    glEnableVertexAttribArray(program->positionAttribute);
+    
+    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+    glEnableVertexAttribArray(program->texCoordAttribute);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(program->positionAttribute);
+    glDisableVertexAttribArray(program->texCoordAttribute);
+}
+
+void Entity::RenderFlower_Sleep(ShaderProgram *program) {
+    program->SetModelMatrix(modelMatrix);
+    
+    
+    float vertices[]  = { -0.3, -0.5, 0.5, -0.5, 0.5, 0.5, -0.3, -0.5, 0.5, 0.5, -0.3, 0.5 };
+    float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    
+    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+    glEnableVertexAttribArray(program->positionAttribute);
+    
+    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+    glEnableVertexAttribArray(program->texCoordAttribute);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(program->positionAttribute);
+    glDisableVertexAttribArray(program->texCoordAttribute);
+    
+}
+
+
+void Entity::RenderDwarf(ShaderProgram *program) {
+    program->SetModelMatrix(modelMatrix);
+    
+    if (animIndices != NULL) {
+           DrawSpriteFromTextureAtlas(program, textureID, animIndices[animIndex]);
+           return;
+       }
     
     float vertices[]  = { -0.8, -0.5, 0.5, -0.5, 0.5, 0.5, -0.8, -0.5, 0.5, 0.5, -0.8, 0.5 };
     float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };

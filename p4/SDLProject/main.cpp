@@ -19,20 +19,17 @@
 #include "Entity.hpp"
 
 #define PLATFORM_COUNT 26
-#define ENEMY_COUNT 2
+#define ENEMY_COUNT 3
 
 
 
 
 struct GameState {
-    
+
     Entity *obstacles;
-    //Entity *flowerLeft;
-    //Entity *flowerRight;
-    //Entity *flowerLeft_On;
-    //Entity *flowerRight_On;
     Entity *player;
     Entity *enemies;
+
     
 };
 
@@ -91,12 +88,16 @@ void Initialize() {
     
     program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
     
+    
     viewMatrix = glm::mat4(1.0f);
     modelMatrix = glm::mat4(1.0f);
     projectionMatrix = glm::ortho(-5.0f, 5.0f, -3.75f, 3.75f, -1.0f, 1.0f);
     
+    
+    
     program.SetProjectionMatrix(projectionMatrix);
     program.SetViewMatrix(viewMatrix);
+    
     
     glUseProgram(program.programID);
     
@@ -117,7 +118,7 @@ void Initialize() {
     state.player->position = glm::vec3(-1.5, 3.25, 0);
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, -15.0, 0);
-    state.player->speed = 1.5f;
+    state.player->speed = glm::vec3(1, 0, 0);
     state.player->jumpPower = 8.5f;
     state.player->textureID = LoadTexture("george_0.png");
     state.player->animRight = new int[4] {3, 7, 11, 15};
@@ -263,12 +264,13 @@ void Initialize() {
     }
     
     
-    //
+    //the dwarf - walking - attack by jump on it
     state.enemies = new Entity[ENEMY_COUNT];
 
     state.enemies[0].textureID = LoadTexture("ctg.png");
-    state.enemies[0].position = glm::vec3(2.0f, -2.28f, 0);
-    state.enemies[0].speed = 1;
+    state.enemies[0].entityName = "dwarf";
+    state.enemies[0].position = glm::vec3(2.0f, -3.28f, 0);
+    state.enemies[0].speed = glm::vec3(1, 0, 0);
     state.enemies[0].acceleration = glm::vec3(0, -10.0f, 0);
     state.enemies[0].movement = glm::vec3(0);
     
@@ -279,22 +281,36 @@ void Initialize() {
     state.enemies[0].width = 0.7f;
     state.enemies[0].height = 0.9f;
     
-    if (state.enemies[1].startAttack == false) {
-        state.enemies[1].textureID = LoadTexture("plantsSleep.png");
-    }
-    else state.enemies[1].textureID = LoadTexture("plantsActivated.png");
-    
-    state.enemies[1].position = glm::vec3(-3.6f, -3.25f, 0);
+    //the flower - eating - attacking by jump on it
+    state.enemies[1].textureID = LoadTexture("plantsSleep.png");
+    state.enemies[1].entityName = "flower";
+    state.enemies[1].textureID_Alter = LoadTexture("plantsActivated.png");
+    state.enemies[1].position = glm::vec3(-3.45f, -3.25f, 0);
     state.enemies[1].entityType = ENEMY;
     state.enemies[1].aiType = WAITANDEAT;
     state.enemies[1].aiState = IDLE;
     
+    //the bird
     
+    state.enemies[2].textureID = LoadTexture("bird.png");
+    state.enemies[2].entityName = "bird";
+    state.enemies[2].position = glm::vec3(0, 2, 0);
+    state.enemies[2].entityType = ENEMY;
+    state.enemies[2].aiType = FLYANDATTACK;
+    state.enemies[2].aiState = FLY;
+    state.enemies[2].animUpANDDown = new int[4] {0, 1, 2, 3};
+    state.enemies[2].animIndices = state.enemies[2].animUpANDDown;
+    state.enemies[2].animFrames = 4;
+    state.enemies[2].animIndex = 0;
+    state.enemies[2].animTime = 0;
+    state.enemies[2].animCols = 4;
+    state.enemies[2].animRows = 1;
+    state.enemies[2].speed = glm::vec3(0, 1, 0);
 
 }
 
 
-void ProcessInput() {
+void ProcessInput()  {
   
         state.player->movement = glm::vec3(0);
     
@@ -447,8 +463,23 @@ void Render() {
         state.obstacles[i].Render(&program);
     }
     
-    for (int i = 0; i < PLATFORM_COUNT; i++) {
-        state.enemies[i].Render2(&program);
+    for (int i = 0; i < ENEMY_COUNT; i++) {
+        if (state.enemies[i].isActive) {
+            if (state.enemies[i].entityName == "dwarf" ) {
+                state.enemies[i].RenderDwarf(&program);
+            }
+            
+            if (state.enemies[i].entityName == "flower") {
+                if (!state.enemies[i].startAttack) {
+                    state.enemies[i].RenderFlower_Sleep(&program); }
+                else state.enemies[i].RenderFlower_Activated(&program);
+            }
+            
+            if(state.enemies[i].entityName == "bird") {
+                state.enemies[i].Render(&program);
+            }
+        
+        }
     }
     
     if(state.player->collideSomething) {
@@ -472,7 +503,8 @@ int main(int argc, char* argv[]) {
         ProcessInput();
         Update();
         Render();
-        //std::cout << "x: " << state.enemies[1].position.x << " y: " << state.enemies[1].position.y << std::endl;
+        std::cout << "PLAYER:  "<< "x: " << state.player->position.x << " y: " << state.player->position.y << std::endl;
+        std::cout << "BIRD:   "<< "x: " << state.enemies[2].position.x << " y: " << state.enemies[2].position.y << std::endl;
         
     }
     

@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef _WINDOWS
-    #include <GL/glew.h>
+	#include <GL/glew.h>
 #endif
 #define GL_GLEXT_PROTOTYPES 1
 #include <SDL_opengl.h>
@@ -13,16 +13,16 @@
 
 class ShaderProgram {
     public:
-    
-        void Load(const char *vertexShaderFile, const char *fragmentShaderFile);
-        void Cleanup();
+	
+		void Load(const char *vertexShaderFile, const char *fragmentShaderFile);
+		void Cleanup();
 
-        void SetModelMatrix(const glm::mat4 &matrix);
+		void SetModelMatrix(const glm::mat4 &matrix);
         void SetProjectionMatrix(const glm::mat4 &matrix);
         void SetViewMatrix(const glm::mat4 &matrix);
-    
-        void SetColor(float r, float g, float b, float a);
-    
+	
+		void SetColor(float r, float g, float b, float a);
+	
         GLuint LoadShaderFromString(const std::string &shaderContents, GLenum type);
         GLuint LoadShaderFromFile(const std::string &shaderFile, GLenum type);
     
@@ -31,8 +31,8 @@ class ShaderProgram {
         GLuint projectionMatrixUniform;
         GLuint modelMatrixUniform;
         GLuint viewMatrixUniform;
-        GLuint colorUniform;
-    
+		GLuint colorUniform;
+	
         GLuint positionAttribute;
         GLuint texCoordAttribute;
     

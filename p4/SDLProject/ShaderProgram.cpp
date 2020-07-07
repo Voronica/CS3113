@@ -18,18 +18,18 @@ void ShaderProgram::Load(const char *vertexShaderFile, const char *fragmentShade
     GLint linkSuccess;
     glGetProgramiv(programID, GL_LINK_STATUS, &linkSuccess);
     if(linkSuccess == GL_FALSE) {
-	printf("Error linking shader program!\n");
+    printf("Error linking shader program!\n");
     }
     
     modelMatrixUniform = glGetUniformLocation(programID, "modelMatrix");
     projectionMatrixUniform = glGetUniformLocation(programID, "projectionMatrix");
     viewMatrixUniform = glGetUniformLocation(programID, "viewMatrix");
-	colorUniform = glGetUniformLocation(programID, "color");
+    colorUniform = glGetUniformLocation(programID, "color");
     
     positionAttribute = glGetAttribLocation(programID, "position");
     texCoordAttribute = glGetAttribLocation(programID, "texCoord");
-	
-	SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+    
+    SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     
 }
 
@@ -85,8 +85,8 @@ GLuint ShaderProgram::LoadShaderFromString(const std::string &shaderContents, GL
 }
 
 void ShaderProgram::SetColor(float r, float g, float b, float a) {
-	glUseProgram(programID);
-	glUniform4f(colorUniform, r, g, b, a);
+    glUseProgram(programID);
+    glUniform4f(colorUniform, r, g, b, a);
 }
 
 void ShaderProgram::SetViewMatrix(const glm::mat4 &matrix) {
@@ -101,5 +101,5 @@ void ShaderProgram::SetModelMatrix(const glm::mat4 &matrix) {
 
 void ShaderProgram::SetProjectionMatrix(const glm::mat4 &matrix) {
     glUseProgram(programID);
-    glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, &matrix[0][0]);    
+    glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, &matrix[0][0]);
 }

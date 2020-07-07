@@ -21,8 +21,8 @@
 
 enum EntityType {PLAYER, PLATFORM, ENEMY};
 
-enum AIType {WALKER, WAITANDGO, WAITANDEAT};
-enum AIState {IDLE, WALKING, ATTACKING};
+enum AIType {WALKER, WAITANDGO, WAITANDEAT, FLYANDATTACK};
+enum AIState {IDLE, WALKING, ATTACKING, FLY};
 
 class Entity {
 public:
@@ -35,6 +35,7 @@ public:
     glm::vec3 movement;
     glm::vec3 acceleration;
     glm::vec3 velocity;
+    glm::vec3 speed;
     
     std::string entityName;
     float width = 1;
@@ -43,9 +44,10 @@ public:
     bool jump = false;
     float jumpPower = 0;
     
-    float speed;
+    
     
     GLuint textureID;
+    GLint textureID_Alter;
     
     glm::mat4 modelMatrix;
     
@@ -53,6 +55,7 @@ public:
     int *animLeft = NULL;
     int *animUp = NULL;
     int *animDown = NULL;
+    int *animUpANDDown = NULL;
 
     int *animIndices = NULL;
     int animFrames = 0;
@@ -81,6 +84,7 @@ public:
     
     Entity();
     
+    
     Entity* checkCollision(Entity *other);
     
     void checkCollisionsX_Rock(Entity *objects, int objectCount);
@@ -93,11 +97,15 @@ public:
     void Update(float deltaTime, Entity *player, Entity *obstacles, int platformCount, Entity *enemies, int enemyCount);
     
     void Render(ShaderProgram *program);
-    void Render2(ShaderProgram *program);
+    void RenderDwarf(ShaderProgram *program);
+    void RenderFlower_Sleep(ShaderProgram *program);
+    void RenderFlower_Activated(ShaderProgram *program);
+    
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
     
     void AI(Entity *player);
     void AIWalker();
     void AIWAITANDGO(Entity *player);
     void AIWAITANDEAT(Entity *player);
+    void AIFLYANDATTACK(Entity *player);
 };
