@@ -53,7 +53,8 @@ void Entity::checkCollisionsX_Rock(Entity *objects, int objectCount) {
         }
     }
 
-void Entity::checkCollisionsY_Rock(Entity *objects, int objectCount) {
+Entity* Entity::checkCollisionsY_Rock(Entity *objects, int objectCount) {
+    Entity *RockStandOn = nullptr;
     
     for (int i = 0; i < objectCount; i++) {
         Entity *object = &objects[i];
@@ -67,14 +68,18 @@ void Entity::checkCollisionsY_Rock(Entity *objects, int objectCount) {
                 position.y -= penetrationY;
                 velocity.y = 0;
                 collidedTop = true;
+                
                    }
             else if (velocity.y < 0) {
                 position.y += penetrationY;
                 velocity.y = 0;
                 collidedBottom = true;
+                RockStandOn = object;
+
                 }
             }
         }
+    return RockStandOn;
     }
 
 Entity* Entity::checkCollisionsY_Enemy(Entity *objects, int objectCount) {
@@ -198,10 +203,11 @@ void Entity::AIFLYANDATTACK(Entity *player) {
         case ATTACKING:
             break;
         case FLY:
-            if (position.y <= 2.0f) {
-                movement.y += 0.5;
+            if (position.y <= 2.2f) {
+                movement.y += 0.24;
             }
             
+            else movement.y -= 0.24;
             
             break;
     }
@@ -238,12 +244,26 @@ void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int plat
             checkCollisionsY_Enemy(enemies, enemyCount);
             
         }
-        else {
+        if (entityType == PLAYER){
+            
+            //check which kind of platform player is on
+            Entity *result = checkCollisionsY_Rock(obstacles, platformCount);
+            
+            if (result != nullptr) {
+                if (checkCollisionsY_Rock(obstacles, platformCount)->entityName == "accelerator") {
+                    std::cout << "touch the acclerator!" << std::endl;
+                    jumpPower = 16;
+                }
+                else if (checkCollisionsY_Rock(obstacles, platformCount)->entityName == "tile") {
+                    std::cout << "touch the tile!" << std::endl;
+                }
+            }
             checkCollisionsX_Enemy(enemies, enemyCount);
             checkCollisionsY_Enemy(enemies, enemyCount);
         }
         
         
+       
         
         
         if (animIndices != NULL) {
@@ -262,8 +282,10 @@ void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int plat
         }
         
         
+
         if (jump) {
             jump = false;
+            
             velocity.y += jumpPower;
         }
         velocity.x = movement.x * speed.x;
@@ -397,6 +419,28 @@ void Entity::RenderDwarf(ShaderProgram *program) {
        }
     
     float vertices[]  = { -0.8, -0.5, 0.5, -0.5, 0.5, 0.5, -0.8, -0.5, 0.5, 0.5, -0.8, 0.5 };
+    float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    
+    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+    glEnableVertexAttribArray(program->positionAttribute);
+    
+    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+    glEnableVertexAttribArray(program->texCoordAttribute);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(program->positionAttribute);
+    glDisableVertexAttribArray(program->texCoordAttribute);
+    
+}
+
+void Entity::RenderAccelerator(ShaderProgram *program) {
+    program->SetModelMatrix(modelMatrix);
+    
+    
+    float vertices[]  = { -0.45, -0.1, 0.7, -0.1, 0.7, 0.1, -0.45, -0.1, 0.7, 0.1, -0.45, 0.1 };
     float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     
     glBindTexture(GL_TEXTURE_2D, textureID);

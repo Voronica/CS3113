@@ -88,7 +88,7 @@ public:
     Entity* checkCollision(Entity *other);
     
     void checkCollisionsX_Rock(Entity *objects, int objectCount);
-    void checkCollisionsY_Rock(Entity *objects, int objectCount);
+    Entity* checkCollisionsY_Rock(Entity *objects, int objectCount);
     
     void checkCollisionsX_Enemy(Entity *objects, int objectCount);
     Entity* checkCollisionsY_Enemy(Entity *objects, int objectCount);
@@ -100,6 +100,7 @@ public:
     void RenderDwarf(ShaderProgram *program);
     void RenderFlower_Sleep(ShaderProgram *program);
     void RenderFlower_Activated(ShaderProgram *program);
+    void RenderAccelerator(ShaderProgram *program);
     
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
     

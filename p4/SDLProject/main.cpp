@@ -18,7 +18,7 @@
 
 #include "Entity.hpp"
 
-#define PLATFORM_COUNT 26
+#define PLATFORM_COUNT 27
 #define ENEMY_COUNT 3
 
 
@@ -29,6 +29,7 @@ struct GameState {
     Entity *obstacles;
     Entity *player;
     Entity *enemies;
+    
 
     
 };
@@ -119,7 +120,7 @@ void Initialize() {
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, -15.0, 0);
     state.player->speed = glm::vec3(1, 0, 0);
-    state.player->jumpPower = 8.5f;
+    state.player->jumpPower = 9.2f;
     state.player->textureID = LoadTexture("george_0.png");
     state.player->animRight = new int[4] {3, 7, 11, 15};
     state.player->animLeft = new int[4] {1, 5, 9, 13};
@@ -249,6 +250,11 @@ void Initialize() {
     state.obstacles[25].textureID = platformTextureID;
     state.obstacles[25].position = glm::vec3(-0.5f, 0.0f, 0);
     
+    state.obstacles[26].entityName = "accelerator";
+    state.obstacles[26].textureID = LoadTexture("landingpad.png");
+    state.obstacles[26].position = glm::vec3(1.41, -0.26, 0);
+    state.obstacles[26].height = 0.3f;
+    state.obstacles[26].entityType = PLATFORM;
     
 
    
@@ -266,6 +272,8 @@ void Initialize() {
     
     //the dwarf - walking - attack by jump on it
     state.enemies = new Entity[ENEMY_COUNT];
+    
+    
 
     state.enemies[0].textureID = LoadTexture("ctg.png");
     state.enemies[0].entityName = "dwarf";
@@ -294,7 +302,7 @@ void Initialize() {
     
     state.enemies[2].textureID = LoadTexture("bird.png");
     state.enemies[2].entityName = "bird";
-    state.enemies[2].position = glm::vec3(0, 2, 0);
+    state.enemies[2].position = glm::vec3(0, 1.5, 0);
     state.enemies[2].entityType = ENEMY;
     state.enemies[2].aiType = FLYANDATTACK;
     state.enemies[2].aiState = FLY;
@@ -460,7 +468,14 @@ void Render() {
     
     
     for (int i = 0; i < PLATFORM_COUNT; i++) {
-        state.obstacles[i].Render(&program);
+        if (state.obstacles[i].entityName == "tile") {
+            state.obstacles[i].Render(&program);
+        }
+        
+        if (state.obstacles[i].entityName == "accelerator") {
+            state.obstacles[i].RenderAccelerator(&program);
+        }
+        
     }
     
     for (int i = 0; i < ENEMY_COUNT; i++) {
@@ -503,8 +518,8 @@ int main(int argc, char* argv[]) {
         ProcessInput();
         Update();
         Render();
-        std::cout << "PLAYER:  "<< "x: " << state.player->position.x << " y: " << state.player->position.y << std::endl;
-        std::cout << "BIRD:   "<< "x: " << state.enemies[2].position.x << " y: " << state.enemies[2].position.y << std::endl;
+        //std::cout << "PLAYER:  "<< "x: " << state.player->position.x << " y: " << state.player->position.y << std::endl;
+        //std::cout << "BIRD:   "<< "x: " << state.enemies[2].position.x << " y: " << state.enemies[2].position.y << std::endl;
         
     }
     
