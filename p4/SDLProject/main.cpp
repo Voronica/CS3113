@@ -120,7 +120,7 @@ void Initialize() {
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, -15.0, 0);
     state.player->speed = glm::vec3(1, 0, 0);
-    state.player->jumpPower = 9.2f;
+    state.player->jumpPower = 8.2f;
     state.player->textureID = LoadTexture("george_0.png");
     state.player->animRight = new int[4] {3, 7, 11, 15};
     state.player->animLeft = new int[4] {1, 5, 9, 13};
@@ -252,7 +252,7 @@ void Initialize() {
     
     state.obstacles[26].entityName = "accelerator";
     state.obstacles[26].textureID = LoadTexture("landingpad.png");
-    state.obstacles[26].position = glm::vec3(1.41, -0.26, 0);
+    state.obstacles[26].position = glm::vec3(1.41, -0.4f, 0);
     state.obstacles[26].height = 0.3f;
     state.obstacles[26].entityType = PLATFORM;
     
@@ -270,7 +270,7 @@ void Initialize() {
     }
     
     
-    //the dwarf - walking - attack by jump on it
+    //the dwarf - walking - beat by jump on it
     state.enemies = new Entity[ENEMY_COUNT];
     
     
@@ -289,16 +289,16 @@ void Initialize() {
     state.enemies[0].width = 0.7f;
     state.enemies[0].height = 0.9f;
     
-    //the flower - eating - attacking by jump on it
+    //the flower - eating - beat by jump on it
     state.enemies[1].textureID = LoadTexture("plantsSleep.png");
     state.enemies[1].entityName = "flower";
     state.enemies[1].textureID_Alter = LoadTexture("plantsActivated.png");
-    state.enemies[1].position = glm::vec3(-3.45f, -3.25f, 0);
+    state.enemies[1].position = glm::vec3(-3.5f, -3.25f, 0);
     state.enemies[1].entityType = ENEMY;
     state.enemies[1].aiType = WAITANDEAT;
     state.enemies[1].aiState = IDLE;
     
-    //the bird
+    //the bird - attacking - beat by jump on it
     
     state.enemies[2].textureID = LoadTexture("bird.png");
     state.enemies[2].entityName = "bird";
@@ -313,7 +313,7 @@ void Initialize() {
     state.enemies[2].animTime = 0;
     state.enemies[2].animCols = 4;
     state.enemies[2].animRows = 1;
-    state.enemies[2].speed = glm::vec3(0, 1, 0);
+    state.enemies[2].speed = glm::vec3(0, 0.8, 0);
 
 }
 
@@ -357,13 +357,13 @@ void ProcessInput()  {
         
             if (keys[SDL_SCANCODE_LEFT]) {
         
-                state.player->movement.x = -1.5f;
+                state.player->movement.x = -2.0f;
                 state.player->animIndices = state.player->animLeft;
                 
             }
             else if (keys[SDL_SCANCODE_RIGHT]) {
                 
-                state.player ->movement.x = 1.5f;
+                state.player ->movement.x = 2.0f;
                 state.player->animIndices = state.player->animRight;
                 
             }
@@ -499,9 +499,22 @@ void Render() {
     
     if(state.player->collideSomething) {
         if(state.player->collideEnemy) {
-            DrawText(&program, fontTextureID, "Game Over" , 0.5f, -0.25f, glm::vec3(-2.0, 0, 0));
+            DrawText(&program, fontTextureID, "Game Over" , 0.5f, -0.25f, glm::vec3(-1.2, 0, 0));
+
         }
     }
+    
+    
+    int enemiesDie = 0;
+    
+    for (int i = 0; i < ENEMY_COUNT; i++) {
+        if (!state.enemies[i].isActive) enemiesDie += 1;
+    }
+    
+    if (enemiesDie == ENEMY_COUNT) {
+        DrawText(&program, fontTextureID, "You Win" , 0.5f, -0.25f, glm::vec3(-1.2 , 0, 0));
+    }
+     
     SDL_GL_SwapWindow(displayWindow);
     
 }
@@ -518,8 +531,7 @@ int main(int argc, char* argv[]) {
         ProcessInput();
         Update();
         Render();
-        //std::cout << "PLAYER:  "<< "x: " << state.player->position.x << " y: " << state.player->position.y << std::endl;
-        //std::cout << "BIRD:   "<< "x: " << state.enemies[2].position.x << " y: " << state.enemies[2].position.y << std::endl;
+        
         
     }
     

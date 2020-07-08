@@ -97,7 +97,6 @@ Entity* Entity::checkCollisionsY_Enemy(Entity *objects, int objectCount) {
              position.y -= penetrationY;
              velocity.y = 0;
              collidedTop = true;
-             
              //collide with an enemy, lose
              collideEnemy = true;
                 }
@@ -108,8 +107,8 @@ Entity* Entity::checkCollisionsY_Enemy(Entity *objects, int objectCount) {
              
              //if collide on top, kill enemy success
              killEnemySuccess = true;
-             //std::cout << "Beat Enemy!" << std::endl;
              EnemyKilled = object;
+             std::cout << "Beat " << EnemyKilled->entityName <<std::endl;
              EnemyKilled->isActive = false;
              
              }
@@ -185,7 +184,7 @@ void Entity::AIWAITANDEAT(Entity *player) {
             break;
         case ATTACKING:
             startAttack = true;  //flower change to attacking mode
-            position = glm::vec3(-3.45f, -2.6f, 0);
+            position = glm::vec3(-3.5f, -2.6f, 0);
             break;
             
         case FLY:
@@ -250,12 +249,11 @@ void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int plat
             Entity *result = checkCollisionsY_Rock(obstacles, platformCount);
             
             if (result != nullptr) {
-                if (checkCollisionsY_Rock(obstacles, platformCount)->entityName == "accelerator") {
-                    std::cout << "touch the acclerator!" << std::endl;
-                    jumpPower = 16;
+                if (result->entityName == "accelerator") {
+                    jumpPower = 12;
                 }
-                else if (checkCollisionsY_Rock(obstacles, platformCount)->entityName == "tile") {
-                    std::cout << "touch the tile!" << std::endl;
+                else if (result->entityName == "tile") {
+                    //std::cout << "touch the tile!" << std::endl;
                 }
             }
             checkCollisionsX_Enemy(enemies, enemyCount);
@@ -298,12 +296,10 @@ void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int plat
         
         
         position.y += velocity.y * deltaTime;// Move on Y
-        checkCollisionsY_Rock(obstacles, platformCount);
-    
-        
-        
+        if (entityType != PLAYER) checkCollisionsY_Rock(obstacles, platformCount);
+
         position.x += velocity.x * deltaTime;     // Move on X
-        checkCollisionsX_Rock(obstacles, platformCount);
+        if (entityType != PLAYER) checkCollisionsX_Rock(obstacles, platformCount);
     
         
         
@@ -370,7 +366,7 @@ void Entity::RenderFlower_Activated(ShaderProgram *program) {
     program->SetModelMatrix(modelMatrix);
     
         
-    float vertices[]  = { -0.3, -0.5, 0.5, -0.5, 0.5, 0.5, -0.3, -0.5, 0.5, 0.5, -0.3, 0.5 };
+    float vertices[]  = { -0.2, -0.5, 0.5, -0.5, 0.5, 0.5, -0.2, -0.5, 0.5, 0.5, -0.2, 0.5 };
     float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     
     glBindTexture(GL_TEXTURE_2D, textureID_Alter);
@@ -391,7 +387,7 @@ void Entity::RenderFlower_Sleep(ShaderProgram *program) {
     program->SetModelMatrix(modelMatrix);
     
     
-    float vertices[]  = { -0.3, -0.5, 0.5, -0.5, 0.5, 0.5, -0.3, -0.5, 0.5, 0.5, -0.3, 0.5 };
+    float vertices[]  = { -0.2, -0.5, 0.5, -0.5, 0.5, 0.5, -0.2, -0.5, 0.5, 0.5, -0.2, 0.5 };
     float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     
     glBindTexture(GL_TEXTURE_2D, textureID);
