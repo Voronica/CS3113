@@ -77,7 +77,7 @@ GLuint LoadTexture(const char* filePath) {
 
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
-    displayWindow = SDL_CreateWindow("Textured!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+    displayWindow = SDL_CreateWindow("Rise of AI - VoronicaZ!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
     SDL_GL_MakeCurrent(displayWindow, context);
     
@@ -270,7 +270,7 @@ void Initialize() {
     }
     
     
-    //the dwarf - walking - beat by jump on it
+    //the dwarf - walking - beat by jump on it / let flower eat it
     state.enemies = new Entity[ENEMY_COUNT];
     
     
@@ -314,6 +314,7 @@ void Initialize() {
     state.enemies[2].animCols = 4;
     state.enemies[2].animRows = 1;
     state.enemies[2].speed = glm::vec3(0, 0.8, 0);
+    
 
 }
 
@@ -499,7 +500,7 @@ void Render() {
     
     if(state.player->collideSomething) {
         if(state.player->collideEnemy) {
-            DrawText(&program, fontTextureID, "Game Over" , 0.5f, -0.25f, glm::vec3(-1.2, 0, 0));
+            DrawText(&program, fontTextureID, "You Lose" , 0.5f, -0.25f, glm::vec3(-1.2, 0, 0));
 
         }
     }

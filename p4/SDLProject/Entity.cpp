@@ -99,6 +99,7 @@ Entity* Entity::checkCollisionsY_Enemy(Entity *objects, int objectCount) {
              collidedTop = true;
              //collide with an enemy, lose
              collideEnemy = true;
+             //std::cout << "Collide Top" << std::endl;
                 }
          else if (velocity.y < 0) {
              position.y += penetrationY;
@@ -131,6 +132,7 @@ void Entity::checkCollisionsX_Enemy(Entity *objects, int objectCount) {
             collidedRight = true;
             //collide with an enemy, lose
             collideEnemy = true;
+            //std::cout << "Collide Right" << std::endl;
                }
         else if (velocity.x < 0) {
             position.x += penetrationX;
@@ -138,6 +140,7 @@ void Entity::checkCollisionsX_Enemy(Entity *objects, int objectCount) {
             collidedLeft = true;
             //collide with an enemy, lose
             collideEnemy = true;
+            //std::cout << "Collide Left" << std::endl;
                }
         }
     }
@@ -253,7 +256,7 @@ void Entity::Update(float deltaTime, Entity *player, Entity *obstacles, int plat
                     jumpPower = 12;
                 }
                 else if (result->entityName == "tile") {
-                    //std::cout << "touch the tile!" << std::endl;
+                    jumpPower = 8.2;
                 }
             }
             checkCollisionsX_Enemy(enemies, enemyCount);
