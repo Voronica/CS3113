@@ -16,20 +16,20 @@
 
 
 unsigned int level1_data[] = {
-    3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-    3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
-    3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 1, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
 void Level1::Initialize() {
     
     state.nexScene = -1;
-    
+    state.passLevel = false;
     
     GLuint mapTextureID = Util::LoadTexture("tileset.png");
     state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 4, 1);
@@ -41,19 +41,33 @@ void Level1::Initialize() {
     // Initialize clouds
     state.clouds = new Entity();
     state.clouds->entityName = "cloud";
-    state.clouds->position = glm::vec3(2, 0, 0);
+    state.clouds->position = glm::vec3(7, -3, 0);
     state.clouds->textureID = Util::LoadTexture("clouds.png");
      
+    //Initialize hearts
+    state.heart = new Entity();
+    state.heart->entityName = "heart";
+    state.heart->position = glm::vec3(8, -0.8f, 0);
+    state.heart->textureID = Util::LoadTexture("heart.png");
+    state.heart->number = 3;
+    
+    //Intitialize door
+    
+    state.door = new Entity();
+    state.door->entityName = "door";
+    state.door->position = glm::vec3(11, -6.135, 0);
+    state.door->textureID = Util::LoadTexture("door.png");
+    
     
      // Initialize player
      
      state.player = new Entity();
      state.player->entityName = "george";
      state.player->entityType = PLAYER;
-     state.player->position = glm::vec3(5, 0, 0);
+    state.player->position = glm::vec3(0.5, 0, 0);
      state.player->movement = glm::vec3(0);
      state.player->acceleration = glm::vec3(0, -15.0, 0);
-     state.player->speed = glm::vec3(2, 0, 0);
+    state.player->speed = glm::vec3(1, 0, 0);
      state.player->jumpPower = 10.2f;
      state.player->textureID = Util::LoadTexture("george_0.png");
      state.player->animRight = new int[4] {3, 7, 11, 15};
@@ -90,12 +104,13 @@ void Level1::Initialize() {
      
      state.enemies[0].width = 0.7f;
      state.enemies[0].height = 0.9f;
+    state.enemies[0].isActive = false;
      
      //the flower - eating - beat by jump on it
      state.enemies[1].textureID = Util::LoadTexture("plantsSleep.png");
      state.enemies[1].entityName = "flower";
      state.enemies[1].textureID_Alter = Util::LoadTexture("plantsActivated.png");
-     state.enemies[1].position = glm::vec3(0);
+    state.enemies[1].position = glm::vec3(2.3, -7, 0);
      state.enemies[1].entityType = ENEMY;
      state.enemies[1].aiType = WAITANDEAT;
      state.enemies[1].aiState = IDLE;
@@ -116,6 +131,7 @@ void Level1::Initialize() {
      state.enemies[2].animCols = 4;
      state.enemies[2].animRows = 1;
      state.enemies[2].speed = glm::vec3(0, 0.8, 0);
+    state.enemies[2].isActive = false;
      
      
      //Load Map
@@ -126,23 +142,35 @@ void Level1::Initialize() {
 
 #define FIXED_TIMESTEP 0.0166666f
 void Level1::Update(float deltaTime) {
-    state.player->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT);
-    state.clouds->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT);
+    
+
+    
+    state.player->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT,state.door);
+    state.clouds->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT,state.door);
+    state.heart->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT,state.door);
+    state.door->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT,state.door);
     
     for (int i = 0; i < LEVEL1_ENEMY_COUNT; i++) {
-        state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT);
+        state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT,state.door);
     }
     
-    if(state.player->position.x >= 12) {
+    if(state.player->position.x == 10.9999) {
         state.nexScene = 1;
+        std::cout << "Pass Level 1" << std::endl;
+        state.passLevel = true;
     }
+    
+    
     
 }
 void Level1::Render(ShaderProgram *program) {
     
     state.map->Render(program);
     state.clouds->RenderClouds(program);
+    state.door->RenderDoor(program);
+    state.heart->RenderHeart(program);
     state.player->Render(program);
+
     
     for (int i = 0; i < LEVEL1_ENEMY_COUNT; i++) {
         if (state.enemies[i].isActive) {
@@ -153,7 +181,10 @@ void Level1::Render(ShaderProgram *program) {
             if (state.enemies[i].entityName == "flower") {
                 if (!state.enemies[i].startAttack) {
                     state.enemies[i].RenderFlower_Sleep(program); }
-                else state.enemies[i].RenderFlower_Activated(program);
+                else {
+                    state.enemies[i].RenderFlower_Activated(program);
+                    
+                }
             }
             
             if(state.enemies[i].entityName == "bird") {
@@ -162,6 +193,8 @@ void Level1::Render(ShaderProgram *program) {
         
         }
     }
+    std::cout << "Player Position: " << state.player->position.x << ' ' << state.player->position.y << std::endl;
     
+    std::cout << "Door Position: " << state.door->position.x << ' ' << state.door->position.y << std::endl;
 }
 

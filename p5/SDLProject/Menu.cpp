@@ -53,7 +53,9 @@ void Menu::Initialize() {
     //Initialize hearts
     state.heart = new Entity();
     state.heart->entityName = "heart";
-    state.heart->position = glm::vec3()
+    state.heart->position = glm::vec3(8, -0.8f, 0);
+    state.heart->textureID = Util::LoadTexture("heart.png");
+    state.heart->number = 3;
     
      // Initialize player
      
@@ -139,12 +141,13 @@ void Menu::Initialize() {
 
 #define FIXED_TIMESTEP 0.0166666f
 void Menu::Update(float deltaTime) {
-    state.player->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT);
-    state.clouds->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT);
-    state.icons->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT);
+    state.player->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT, state.door);
+    state.heart->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT, state.door);
+    state.clouds->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT, state.door);
+    state.icons->Update(deltaTime, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT, state.door);
     
     for (int i = 0; i < LEVEL1_ENEMY_COUNT; i++) {
-        state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT);
+        state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT, state.door);
     }
     
     if(state.player->position.x >= 11) {
@@ -154,6 +157,7 @@ void Menu::Update(float deltaTime) {
 void Menu::Render(ShaderProgram *program) {
     state.map->Render(program);
      state.clouds->RenderClouds(program);
+    state.heart->RenderHeart(program);
     state.icons->RenderStart(program);
     state.player->Render(program);
     

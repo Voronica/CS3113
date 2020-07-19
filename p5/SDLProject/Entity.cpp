@@ -254,7 +254,7 @@ void Entity::AIWAITANDEAT(Entity *player) {
             break;
         case ATTACKING:
             startAttack = true;  //flower change to attacking mode
-            position = glm::vec3(-3.5f, -2.6f, 0);
+            position = glm::vec3(2.3, -5.7, 0);
             break;
             
         case FLY:
@@ -298,7 +298,7 @@ void Entity::AI(Entity *player) {
 }
 
 
-void Entity::Update(float deltaTime, Entity *player, Map *map, Entity *enemies, int enemyCount) {
+void Entity::Update(float deltaTime, Entity *player, Map *map, Entity *enemies, int enemyCount, Entity *door) {
     
         collidedTop = false;
         collidedBottom = false;
@@ -331,6 +331,12 @@ void Entity::Update(float deltaTime, Entity *player, Map *map, Entity *enemies, 
              */
             checkCollisionsX_Enemy(enemies, enemyCount);
             checkCollisionsY_Enemy(enemies, enemyCount);
+            
+            
+            Entity *theDoor = checkCollision(door);
+            if (theDoor != nullptr) {
+                std::cout << "Touched the door" << std::endl;
+            }
         }
         
         
@@ -571,4 +577,52 @@ void Entity::RenderStart(ShaderProgram *program) {
     glDisableVertexAttribArray(program->positionAttribute);
     glDisableVertexAttribArray(program->texCoordAttribute);
     
+}
+
+void Entity::RenderHeart(ShaderProgram *program) {
+    program->SetModelMatrix(modelMatrix);
+    
+    
+    float vertices[]  = { -0.2, -0.3, 0.7, -0.3, 0.7, 0.3, -0.2, -0.3, 0.7, 0.3, -0.2, 0.3 };
+    float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    
+    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+    glEnableVertexAttribArray(program->positionAttribute);
+    
+    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+    glEnableVertexAttribArray(program->texCoordAttribute);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(program->positionAttribute);
+    glDisableVertexAttribArray(program->texCoordAttribute);
+    
+}
+
+void Entity::RenderDoor(ShaderProgram *program) {
+
+    program->SetModelMatrix(modelMatrix);
+    
+    if (animIndices != NULL) {
+        DrawSpriteFromTextureAtlas(program, textureID, animIndices[animIndex]);
+        return;
+    }
+        
+    float vertices[]  = { -0.6, -0.6, 0.6, -0.6, 0.6, 0.6, -0.6, -0.6, 0.6, 0.6, -0.6, 0.6 };
+    float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    
+    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+    glEnableVertexAttribArray(program->positionAttribute);
+    
+    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+    glEnableVertexAttribArray(program->texCoordAttribute);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(program->positionAttribute);
+    glDisableVertexAttribArray(program->texCoordAttribute);
 }

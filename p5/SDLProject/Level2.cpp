@@ -115,7 +115,7 @@ void Level2::Initialize() {
     
 }
 void Level2::Update(float deltaTime) {
-    state.player->Update(deltaTime, state.player, state.map, state.enemies, LEVEL2_ENEMY_COUNT);
+    state.player->Update(deltaTime, state.player, state.map, state.enemies, LEVEL2_ENEMY_COUNT, state.door);
 }
 void Level2::Render(ShaderProgram *program) {
     state.map->Render(program); state.player->Render(program);

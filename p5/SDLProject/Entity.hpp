@@ -39,6 +39,7 @@ public:
     glm::vec3 speed;
     
     std::string entityName;
+    float number;
     float width = 1;
     float height = 1;
     
@@ -97,7 +98,7 @@ public:
     void CheckCollisionsY(Map *map);
 
     void UpdateAI(Entity *player, Entity *AI, float deltaTime, Entity *enemies, int enemyCount);
-    void Update(float deltaTime, Entity *player, Map *map, Entity *enemies, int enemyCount);
+    void Update(float deltaTime, Entity *player, Map *map, Entity *enemies, int enemyCount, Entity *door);
     
     void Render(ShaderProgram *program);
     void RenderDwarf(ShaderProgram *program);
@@ -106,6 +107,8 @@ public:
     void RenderAccelerator(ShaderProgram *program);
     void RenderClouds(ShaderProgram *program);
     void RenderStart(ShaderProgram *program);
+    void RenderHeart(ShaderProgram *program);
+    void RenderDoor(ShaderProgram *program);
     
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
     

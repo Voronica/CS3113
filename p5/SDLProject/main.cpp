@@ -37,6 +37,8 @@ glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 Scene *currentScene;
 Scene *sceneList[3];
 
+int lives;
+
 ;
 
 void SwitchToScene(Scene *scene) {
@@ -82,7 +84,9 @@ void Initialize() {
     sceneList[0] = new Menu();
     sceneList[1] = new Level1();
     sceneList[2] = new Level2();
-    SwitchToScene(sceneList[0]);
+    SwitchToScene(sceneList[1]);
+    
+    lives = 3;
     
 }
 
@@ -137,13 +141,20 @@ void ProcessInput()  {
                 
             }
             
-        
-    
-    
-    if (glm::length(currentScene->state.player->movement) > 1.0f) {
-        currentScene->state.player->movement = glm::normalize(currentScene->state.player->movement);
+    //main menu
+    if (currentScene == sceneList[0]) {
+        if (glm::length(currentScene->state.player->movement) > 1.0f) {
+            currentScene->state.player->movement = glm::normalize(currentScene->state.player->movement);
+            }
+    }
+    if (currentScene == sceneList[1] or currentScene == sceneList[2]) {
+        if (currentScene->state.passLevel) {
+            std::cout << "Pass the level!" << std::endl;
+            currentScene->state.player->movement = glm::normalize(currentScene->state.player->movement);
         }
+    }
 }
+    
 
  #define FIXED_TIMESTEP 0.0166666f
 float lastTicks = 0;
@@ -242,59 +253,13 @@ void Render() {
     program.SetViewMatrix(viewMatrix);
     
     currentScene->Render(&program);
-    /*
-    for (int i = 0; i < PLATFORM_COUNT; i++) {
-        if (state.obstacles[i].entityName == "tile") {
-            state.obstacles[i].Render(&program);
-        }
-        
-        if (state.obstacles[i].entityName == "accelerator") {
-            state.obstacles[i].RenderAccelerator(&program);
-        }
-        
-    }
     
-    for (int i = 0; i < ENEMY_COUNT; i++) {
-        if (state.enemies[i].isActive) {
-            if (state.enemies[i].entityName == "dwarf" ) {
-                state.enemies[i].RenderDwarf(&program);
-            }
-            
-            if (state.enemies[i].entityName == "flower") {
-                if (!state.enemies[i].startAttack) {
-                    state.enemies[i].RenderFlower_Sleep(&program); }
-                else state.enemies[i].RenderFlower_Activated(&program);
-            }
-            
-            if(state.enemies[i].entityName == "bird") {
-                state.enemies[i].Render(&program);
-            }
-        
-        }
-    }
-     
-    
-    if(state.player->collideSomething) {
-        if(state.player->collideEnemy) {
-            DrawText(&program, fontTextureID, "You Lose" , 0.5f, -0.25f, glm::vec3(-1.2, 0, 0));
-
-        }
-    }
-    
-    
-    int enemiesDie = 0;
-    
-    for (int i = 0; i < ENEMY_COUNT; i++) {
-        if (!state.enemies[i].isActive) enemiesDie += 1;
-    }
-    
-    if (enemiesDie == ENEMY_COUNT) {
-        DrawText(&program, fontTextureID, "You Win" , 0.5f, -0.25f, glm::vec3(-1.2 , 0, 0));
-    }
-     */
     if (currentScene == sceneList[0]) {
         DrawText(&program, fontTextureID, "Little George" , 0.5f, -0.25f, glm::vec3(3.5, -3, 0));
     }
+    
+    DrawText(&program, fontTextureID, " x " + std::to_string(lives) , 0.5f, -0.25f, glm::vec3(8.8f, -0.83f, 0));
+    
     SDL_GL_SwapWindow(displayWindow);
     
 }

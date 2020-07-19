@@ -26,6 +26,7 @@
 		D78D77B124C2242F00CE7393 /* clouds.png in Copy Files */ = {isa = PBXBuildFile; fileRef = D78D77B024C2242A00CE7393 /* clouds.png */; };
 		D78D77B324C23D7B00CE7393 /* start.png in Copy Files */ = {isa = PBXBuildFile; fileRef = D78D77B224C23D7300CE7393 /* start.png */; };
 		D78D77B524C2440D00CE7393 /* heart.png in Copy Files */ = {isa = PBXBuildFile; fileRef = D78D77B424C2440800CE7393 /* heart.png */; };
+		D78D77B724C2672A00CE7393 /* door.png in Copy Files */ = {isa = PBXBuildFile; fileRef = D78D77B624C2672300CE7393 /* door.png */; };
 		D7F3D6F124C0A8D00008E8C7 /* tileset.png in Copy Files */ = {isa = PBXBuildFile; fileRef = D7F3D6F024C0A8C40008E8C7 /* tileset.png */; };
 		D7F3D6F424C0AC840008E8C7 /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7F3D6F224C0AC840008E8C7 /* Map.cpp */; };
 		D7F445B424A2D38300079C1E /* font2.png in Copy Files */ = {isa = PBXBuildFile; fileRef = D7F445B224A2CCAB00079C1E /* font2.png */; };
@@ -52,6 +53,7 @@
 				D714FB4124B502FD00662D96 /* plantsActivated.png in Copy Files */,
 				D7F445B424A2D38300079C1E /* font2.png in Copy Files */,
 				D714FB4224B502FF00662D96 /* plantsSleep.png in Copy Files */,
+				D78D77B724C2672A00CE7393 /* door.png in Copy Files */,
 				D714FB3A24B0EFA900662D96 /* ctg.png in Copy Files */,
 				D78D77B124C2242F00CE7393 /* clouds.png in Copy Files */,
 				D7F3D6F124C0A8D00008E8C7 /* tileset.png in Copy Files */,
@@ -467,6 +469,7 @@
 		D78D77B024C2242A00CE7393 /* clouds.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clouds.png; sourceTree = "<group>"; };
 		D78D77B224C23D7300CE7393 /* start.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = start.png; sourceTree = "<group>"; };
 		D78D77B424C2440800CE7393 /* heart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heart.png; sourceTree = "<group>"; };
+		D78D77B624C2672300CE7393 /* door.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = door.png; sourceTree = "<group>"; };
 		D7F3D6F024C0A8C40008E8C7 /* tileset.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tileset.png; sourceTree = "<group>"; };
 		D7F3D6F224C0AC840008E8C7 /* Map.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Map.cpp; sourceTree = "<group>"; };
 		D7F3D6F324C0AC840008E8C7 /* Map.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
@@ -945,6 +948,7 @@
 				D714FB4024B502F800662D96 /* plantsActivated.png */,
 				D78D77B024C2242A00CE7393 /* clouds.png */,
 				D714FB3F24B502F800662D96 /* plantsSleep.png */,
+				D78D77B624C2672300CE7393 /* door.png */,
 				D78D77B424C2440800CE7393 /* heart.png */,
 				D742C809249D22FE00236798 /* landingpad.png */,
 				D7F3D6F024C0A8C40008E8C7 /* tileset.png */,
@@ -965,14 +969,14 @@
 				D74E59EB249BC9BD00883AAF /* Entity.cpp */,
 				D7F3D6F224C0AC840008E8C7 /* Map.cpp */,
 				D7F3D6F324C0AC840008E8C7 /* Map.h */,
-				D78D77A424C1486300CE7393 /* Scene.cpp */,
 				D78D77A524C1486300CE7393 /* Scene.h */,
+				D78D77A424C1486300CE7393 /* Scene.cpp */,
 				D78D77AD24C21E5C00CE7393 /* Menu.cpp */,
 				D78D77AE24C21E5C00CE7393 /* Menu.h */,
 				D78D77A824C14E2B00CE7393 /* Level1.h */,
+				D78D77AB24C1F1CC00CE7393 /* Level2.h */,
 				D78D77A724C14E2A00CE7393 /* Level1.cpp */,
 				D78D77AA24C1F1CC00CE7393 /* Level2.cpp */,
-				D78D77AB24C1F1CC00CE7393 /* Level2.h */,
 			);
 			path = SDLProject;
 			sourceTree = "<group>";

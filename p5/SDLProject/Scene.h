@@ -29,7 +29,11 @@ struct GameState {
     Entity *clouds;
     Entity *icons;
     Entity *heart;
+    Entity *door;
+    
+    bool passLevel;
     int nexScene;
+    int lives;
 };
 
 class Scene {
