@@ -84,7 +84,7 @@ void Initialize() {
     sceneList[0] = new Menu();
     sceneList[1] = new Level1();
     sceneList[2] = new Level2();
-    SwitchToScene(sceneList[1]);
+    SwitchToScene(sceneList[2]);
     
     lives = 3;
     

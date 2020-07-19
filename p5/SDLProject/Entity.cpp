@@ -20,7 +20,7 @@ Entity::Entity()
 }
 
 Entity* Entity::checkCollision(Entity *other) {
-    if (isActive == false || other->isActive == false) return nullptr;
+    //if (isActive == false || other->isActive == false) return nullptr;
     
     float xdist = fabs(position.x - other->position.x) - ((width + other->width) /2.0f);
     float ydist = fabs(position.y - other->position.y) - ((height + other->height) /2.0f);
@@ -272,11 +272,12 @@ void Entity::AIFLYANDATTACK(Entity *player) {
         case ATTACKING:
             break;
         case FLY:
-            if (position.y <= 2.2f) {
-                movement.y += 0.24;
+            
+            if (position.y <= -3.2f) {
+                movement.y += 0.1;
             }
             
-            else movement.y -= 0.24;
+            else movement.y -= 0.1;
             
             break;
     }
@@ -328,6 +329,7 @@ void Entity::Update(float deltaTime, Entity *player, Map *map, Entity *enemies, 
                     jumpPower = 8.2;
                 }
             }
+             
              */
             checkCollisionsX_Enemy(enemies, enemyCount);
             checkCollisionsY_Enemy(enemies, enemyCount);
@@ -336,6 +338,7 @@ void Entity::Update(float deltaTime, Entity *player, Map *map, Entity *enemies, 
             Entity *theDoor = checkCollision(door);
             if (theDoor != nullptr) {
                 std::cout << "Touched the door" << std::endl;
+                touchSuccess = true;
             }
         }
         

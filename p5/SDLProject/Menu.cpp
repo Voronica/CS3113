@@ -57,6 +57,15 @@ void Menu::Initialize() {
     state.heart->textureID = Util::LoadTexture("heart.png");
     state.heart->number = 3;
     
+    //Intitialize door
+    
+    state.door = new Entity();
+    state.door->entityName = "door";
+    state.door->position = glm::vec3(11, -6.135, 0);
+    state.door->textureID = Util::LoadTexture("door.png");
+    state.door->entityType = DOOR;
+    state.door->isActive = false;
+    
      // Initialize player
      
      state.player = new Entity();

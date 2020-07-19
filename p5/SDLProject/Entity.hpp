@@ -20,7 +20,7 @@
 #include "ShaderProgram.h"
 #include "Map.h"
 
-enum EntityType {PLAYER, PLATFORM, ENEMY};
+enum EntityType {PLAYER, PLATFORM, ENEMY, DOOR};
 
 enum AIType {WALKER, WAITANDGO, WAITANDEAT, FLYANDATTACK};
 enum AIState {IDLE, WALKING, ATTACKING, FLY};
@@ -68,6 +68,7 @@ public:
     
     bool isActive = true;
     bool startAttack = false;
+    bool touchSuccess = false;
     
     bool collidedTop = false;
     bool collidedBottom = false;

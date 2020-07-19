@@ -57,6 +57,7 @@ void Level1::Initialize() {
     state.door->entityName = "door";
     state.door->position = glm::vec3(11, -6.135, 0);
     state.door->textureID = Util::LoadTexture("door.png");
+    state.door->entityType = DOOR;
     
     
      // Initialize player
@@ -154,15 +155,17 @@ void Level1::Update(float deltaTime) {
         state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.map, state.enemies, LEVEL1_ENEMY_COUNT,state.door);
     }
     
-    if(state.player->position.x == 10.9999) {
-        state.nexScene = 1;
-        std::cout << "Pass Level 1" << std::endl;
+    if(state.player->touchSuccess) {
         state.passLevel = true;
+        state.nexScene = 2;
+        std::cout << "Pass Level 1" << std::endl;
+        
     }
     
     
     
 }
+
 void Level1::Render(ShaderProgram *program) {
     
     state.map->Render(program);
@@ -193,8 +196,8 @@ void Level1::Render(ShaderProgram *program) {
         
         }
     }
-    std::cout << "Player Position: " << state.player->position.x << ' ' << state.player->position.y << std::endl;
+    //std::cout << "Player Position: " << state.player->position.x << ' ' << state.player->position.y << std::endl;
     
-    std::cout << "Door Position: " << state.door->position.x << ' ' << state.door->position.y << std::endl;
+    //std::cout << "Door Position: " << state.door->position.x << ' ' << state.door->position.y << std::endl;
 }
 
