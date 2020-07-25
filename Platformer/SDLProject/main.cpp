@@ -40,8 +40,8 @@ Mix_Chunk *music_beatEnemy;
 
 GLuint fontTextureID;
 
-ShaderProgram program;
-glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
+ShaderProgram program, program_UI;
+glm::mat4 viewMatrix, modelMatrix, projectionMatrix, viewMatrix_UI;
   
 Scene *currentScene;
 Scene *sceneList[4];
@@ -69,6 +69,7 @@ void Initialize() {
     glViewport(0, 0, 1280, 960);
     
     program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
+    program_UI.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
     
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
     music_menu = Mix_LoadMUS("dooblydoo.mp3");
@@ -83,6 +84,7 @@ void Initialize() {
     
     
     viewMatrix = glm::mat4(1.0f);
+    viewMatrix_UI = glm::mat4(1.0f);
     modelMatrix = glm::mat4(1.0f);
     projectionMatrix = glm::ortho(-5.0f, 5.0f, -3.75f, 3.75f, -1.0f, 1.0f);
     
@@ -90,9 +92,14 @@ void Initialize() {
     
     program.SetProjectionMatrix(projectionMatrix);
     program.SetViewMatrix(viewMatrix);
+    program_UI.SetProjectionMatrix(projectionMatrix);
+    program_UI.SetViewMatrix(viewMatrix);
+    
     
     
     glUseProgram(program.programID);
+    glUseProgram(program_UI.programID);
+    
     
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glEnable(GL_BLEND);
@@ -195,9 +202,9 @@ void Update() {
     float deltaTime = ticks - lastTicks;
     lastTicks = ticks;
     
+    //update music
     if (currentScene->state.player->jump) Mix_PlayChannel(-1, music_jump, 0);
-    //if (currentScene->state.player->collideEnemy) Mix_PlayChannel(-1, music_collideEnemy, 0);
-    //if (currentScene->state.player->killEnemySuccess) Mix_PlayChannel(-1, music_beatEnemy, 0);
+
     
     deltaTime += accumulator;
     
@@ -209,17 +216,12 @@ void Update() {
     while (deltaTime >= FIXED_TIMESTEP) {
     // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
         currentScene->Update(FIXED_TIMESTEP);
-        /*
-        for (int i = 0; i < ENEMY_COUNT; i++) {
-            state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.obstacles, PLATFORM_COUNT, state.enemies, ENEMY_COUNT);
-            
-        }
-         */
         
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
     
+    //update viewMatrix
     viewMatrix = glm::mat4(1.0f);
     if (currentScene->state.player->position.x > 5) {
         viewMatrix = glm::translate(viewMatrix, glm::vec3(-currentScene->state.player->position.x, 3.75, 0));
@@ -297,23 +299,24 @@ void Render() {
     
     glClear(GL_COLOR_BUFFER_BIT);
     program.SetViewMatrix(viewMatrix);
+    program_UI.SetViewMatrix(viewMatrix_UI);
     
-    currentScene->Render(&program);
+    currentScene->Render(&program, &program_UI);
     
     if (currentScene == sceneList[0]) {
-        DrawText(&program, fontTextureID, "Little George" , 0.5f, -0.25f, glm::vec3(3.5, -3, 0));
+        DrawText(&program_UI, fontTextureID, "Little George" , 0.5f, -0.25f, glm::vec3(-1.35f, 1, 0));
     }
     
-    DrawText(&program, fontTextureID, " x " + std::to_string(lives) , 0.5f, -0.25f, glm::vec3(8.8f, -0.83f, 0));
+    DrawText(&program_UI, fontTextureID, " x " + std::to_string(lives) , 0.5f, -0.25f, glm::vec3(3.8f, 2.94f, 0));
     
     if (currentScene == sceneList[3]) {
         if (currentScene->state.passLevel) {
-            DrawText(&program, fontTextureID, "You Win!" , 0.5f, -0.25f, glm::vec3(4, -3, 0));
+            DrawText(&program_UI, fontTextureID, "You Win!" , 0.5f, -0.25f, glm::vec3(-1.0f, 1, 0));
             currentScene->state.player->movement = glm::normalize(currentScene->state.player->movement);
         }
     }
     if (gameOver) {
-        DrawText(&program, fontTextureID, "You Lose!" , 0.5f, -0.25f, glm::vec3(4, -3, 0));
+        DrawText(&program_UI, fontTextureID, "You Lose!" , 0.5f, -0.25f, glm::vec3(-1.0f, 1, 0));
     }
     
     SDL_GL_SwapWindow(displayWindow);

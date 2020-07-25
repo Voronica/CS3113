@@ -42,5 +42,5 @@ public:
     GameState state;
     virtual void Initialize() = 0;
     virtual void Update(float deltaTime) = 0;
-    virtual void Render(ShaderProgram *program) = 0;
+    virtual void Render(ShaderProgram *program, ShaderProgram *program_UI) = 0;
 };

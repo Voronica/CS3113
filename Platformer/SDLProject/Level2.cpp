@@ -45,7 +45,7 @@ void Level2::Initialize() {
     //Initialize hearts
     state.heart = new Entity();
     state.heart->entityName = "heart";
-    state.heart->position = glm::vec3(8, -0.8f, 0);
+    state.heart->position = glm::vec3(3 , 2.95f, 0);
     state.heart->textureID = Util::LoadTexture("heart.png");
     state.heart->number = 3;
     
@@ -165,12 +165,12 @@ void Level2::Update(float deltaTime) {
     
 }
     
-void Level2::Render(ShaderProgram *program) {
+void Level2::Render(ShaderProgram *program, ShaderProgram *program_UI) {
     
     state.map->Render(program);
     state.clouds->RenderClouds(program);
     state.door->RenderDoor(program);
-    state.heart->RenderHeart(program);
+    state.heart->RenderHeart(program_UI);
     state.player->Render(program);
 
     
